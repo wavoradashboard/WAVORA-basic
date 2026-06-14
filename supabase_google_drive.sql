@@ -1,0 +1,13 @@
+-- Since the 'tracks' column is of type JSONB, no DDL (ALTER TABLE) is required to support the new 'googleDriveLink' field.
+-- The data is ingested dynamically by the application.
+
+-- To query the tracks and include the Google Drive link, you can use:
+-- SELECT
+--   id,
+--   album_name,
+--   t->>'trackName' as track_name,
+--   t->>'googleDriveLink' as google_drive_link
+-- FROM
+--   releases,
+--   jsonb_array_elements(tracks) as t
+-- WHERE t->>'googleDriveLink' IS NOT NULL;

@@ -1,0 +1,14 @@
+-- No schema change is strictly required since track data, including the ISRC code, 
+-- is stored within the 'tracks' JSONB column in the 'releases' table.
+-- The JSONB strategy allows dynamic updates without DDL commands.
+
+-- However, if you wanted to query tracks with ISRCs manually in Supabase:
+-- SELECT
+--   id,
+--   album_name,
+--   t->>'trackName' as track_name,
+--   t->>'isrc' as isrc
+-- FROM
+--   releases,
+--   jsonb_array_elements(tracks) as t
+-- WHERE t->>'isrc' IS NOT NULL;
