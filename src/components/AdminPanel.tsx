@@ -27,7 +27,8 @@ import {
   Layers,
   Copy,
   Landmark,
-  Edit2
+  Edit2,
+  XCircle
 } from 'lucide-react';
 import { User, Release, SupportQuery, OacApplication, RevenueReport, TrackStatus, Plan, Notification, ArtistProfile, PayoutRequest } from '../types';
 
@@ -447,68 +448,74 @@ export default function AdminPanel({
         </div>
 
         {/* Tracks table */}
-        <div className="bg-black/20 p-3 rounded-xl border border-white/10 overflow-x-auto scrollbar-hide">
-          <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider block mb-1">Supplied Audio Metadata Assets ({rel.tracks.length})</span>
-          <table className="w-full text-left text-[11px] text-gray-300 min-w-[600px]">
+        <div className="bg-slate-950/40 backdrop-blur-md p-5 rounded-2xl border border-slate-800/60 shadow-xl overflow-x-auto scrollbar-hide">
+          <span className="text-[10px] uppercase font-extrabold text-[#818CF8] tracking-widest block mb-3.5">Supplied Audio Metadata Assets ({rel.tracks.length})</span>
+          <table className="w-full text-left text-[11px] text-gray-300 min-w-[600px] border-collapse">
             <thead>
-              <tr className="border-b border-white/10 text-gray-500">
-                <th className="py-1"># Title</th>
-                <th className="py-1">Producer / Composer</th>
-                <th className="py-1">ISRC</th>
-                <th className="py-1 text-center">Explicit</th>
-                <th className="py-1">Attached WAV</th>
+              <tr className="bg-slate-900/60 border-b border-slate-800/40 text-slate-400 text-[9px] uppercase tracking-wider font-extrabold">
+                <th className="py-2.5 px-3"># Title</th>
+                <th className="py-2.5 px-3">Producer / Creator</th>
+                <th className="py-2.5 px-3">ISRC System Code</th>
+                <th className="py-2.5 px-3 text-center">Explicit Lyrics</th>
+                <th className="py-2.5 px-3">Audio Source</th>
+                <th className="py-2.5 px-3 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-slate-800/25">
               {rel.tracks.map((track, i) => (
-                <tr key={track.id} className="border-b border-white/10/60">
-                  <td className="py-2.5 font-bold text-gray-200">
-                    <div className="flex items-center gap-1.5">
-                      {i+1}. {track.trackName}
+                <tr key={track.id} className="hover:bg-indigo-950/5 transition">
+                  <td className="py-3.5 px-3 font-extrabold text-[#f1f5f9]">
+                    <div className="flex items-center gap-2">
+                      <span className="text-slate-500 font-mono text-[10px]">{String(i + 1).padStart(2, '0')}.</span>
+                      <span className="text-xs">{track.trackName}</span>
                       <button 
                         onClick={() => handleCopy(track.trackName, 'Track Name')}
-                        className="p-0.5 hover:text-[#6366F1] text-gray-500 transition cursor-pointer"
+                        className="p-1 hover:text-[#818CF8] text-slate-550 transition cursor-pointer"
+                        title="Copy track name"
                       >
-                        <Copy className="w-2.5 h-2.5" />
+                        <Copy className="w-3 h-3" />
                       </button>
                     </div>
-                    <div className="text-[10px] text-gray-400 font-normal mt-0.5">
-                      By: <span className="text-gray-300 font-semibold">{track.mainArtistName}</span>
+                    <div className="text-[10px] text-slate-400 font-normal mt-1">
+                      By: <span className="text-indigo-300 font-semibold">{track.mainArtistName}</span>
                       {track.featureArtists && track.featureArtists.length > 0 && ` (feat. ${track.featureArtists.join(', ')})`}
                       {track.otherArtists && track.otherArtists.length > 0 && ` (other. ${track.otherArtists.join(', ')})`}
                     </div>
                   </td>
-                  <td className="py-2.5 text-gray-400">
-                    {track.producer || 'N/A'} / {track.composer || 'N/A'}
+                  <td className="py-3.5 px-3 text-slate-300">
+                    <div className="space-y-0.5">
+                      <span className="block text-slate-400"><span className="text-[9px] text-slate-500 uppercase">Prod:</span> {track.producer || 'N/A'}</span>
+                      <span className="block text-slate-400"><span className="text-[9px] text-slate-500 uppercase">Comp:</span> {track.composer || 'N/A'}</span>
+                    </div>
                   </td>
-                  <td className="py-2.5 font-mono text-gray-400">
-                    <div className="flex items-center gap-1.5">
-                      {track.isrc || '-- Auto Generate --'}
+                  <td className="py-3.5 px-3 font-mono text-slate-300">
+                    <div className="flex items-center gap-1.5 bg-slate-900/60 border border-slate-800/80 rounded px-2 py-0.5 w-fit">
+                      <span className="text-[10px] text-slate-205">{track.isrc || '-- Auto Generated --'}</span>
                       {track.isrc && (
                         <button 
                           onClick={() => handleCopy(track.isrc!, 'ISRC')}
-                          className="p-0.5 hover:text-[#6366F1] text-gray-500 transition cursor-pointer"
+                          className="p-0.5 hover:text-[#818CF8] text-slate-550 transition cursor-pointer"
                         >
                           <Copy className="w-2.5 h-2.5" />
                         </button>
                       )}
                     </div>
                   </td>
-                  <td className="py-2.5 text-center">
+                  <td className="py-3.5 px-3 text-center">
                     {(track.explicitContent || (track as any).explicit_content) ? (
-                      <span className="px-2 py-0.5 text-[9px] bg-red-950 text-red-500 border border-red-500/20 font-bold rounded">⚠️ YES</span>
+                      <span className="px-2.5 py-1 text-[9px] bg-rose-500/10 text-rose-455 border border-rose-500/25 font-black uppercase rounded-lg tracking-wider">⚠️ YES</span>
                     ) : (
-                      <span className="px-2 py-0.5 text-[9px] bg-indigo-950 text-indigo-400 border border-[#10b981]/25 font-bold rounded">✓ NO</span>
+                      <span className="px-2.5 py-1 text-[9px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/25 font-black uppercase rounded-lg tracking-wider">✓ NO</span>
                     )}
                   </td>
-                  <td className="py-2.5 text-[10px] text-blue-400 underline truncate max-w-[120px]">
+                  <td className="py-3.5 px-3 text-[10px] text-indigo-400 truncate max-w-[120px] font-mono" title={track.audioFileName}>
                     {track.audioFileName || 'Master_v1.wav'}
                   </td>
-                  <td className="py-2.5 px-2">
+                  <td className="py-3.5 px-3 text-right">
                     {track.audioFileName && (
                       <button
                         onClick={() => onDownloadFile(track.audioFileName!)}
-                        className="p-1 px-2 bg-blue-950/20 hover:bg-blue-900/30 text-[9px] text-blue-400 border border-blue-500/20 rounded font-bold cursor-pointer transition uppercase"
+                        className="px-3 py-1.5 bg-indigo-505/10 hover:bg-indigo-500/20 text-[#818CF8] hover:text-white border border-[#818CF8]/30 hover:border-indigo-400 text-[10px] rounded-xl font-bold cursor-pointer transition uppercase tracking-wider shadow"
                       >
                         Get WAV
                       </button>
@@ -1611,91 +1618,107 @@ export default function AdminPanel({
 
             {/* List */}
             {payoutRequests.length === 0 ? (
-              <p className="text-xs text-gray-400 text-center py-8">No payout transactions found on the database.</p>
+              <p className="text-xs text-slate-500 text-center py-10 font-medium">No payout transactions found on the database.</p>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse text-xs">
+              <div className="overflow-x-auto rounded-2xl border border-slate-800/80 shadow-2xl">
+                <table className="w-full text-left border-collapse-collapse text-xs">
                   <thead>
-                    <tr className="border-b border-white/10 text-gray-400 text-[10px] uppercase font-black tracking-widest bg-black/30">
-                      <th className="py-2.5 px-3">Filing ID / Date</th>
-                      <th className="py-2.5 px-3">Artist Profile</th>
-                      <th className="py-2.5 px-3">Amount & Currency</th>
-                      <th className="py-2.5 px-3">Payment Credentials</th>
-                      <th className="py-2.5 px-3">Workflow State</th>
-                      <th className="py-2.5 px-3">Administrative Dispatch Control</th>
+                    <tr className="bg-slate-900/80 border-b border-slate-800/50 text-[#818CF8] text-[9.5px] uppercase font-black tracking-widest">
+                      <th className="py-3.5 px-4">Filing ID / Date</th>
+                      <th className="py-3.5 px-4">Artist Profile</th>
+                      <th className="py-3.5 px-4">Amount & Currency</th>
+                      <th className="py-3.5 px-4">Payment Credentials</th>
+                      <th className="py-3.5 px-4">Workflow State</th>
+                      <th className="py-3.5 px-4 text-right">Administrative Dispatch Control</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="divide-y divide-slate-800/30">
                     {payoutRequests.map((req) => (
-                      <tr key={req.id} className="border-b border-white/10 hover:bg-black/20 group">
-                        <td className="py-4 px-3 font-mono">
-                          <span className="text-white block font-bold">{req.id}</span>
-                          <span className="text-[9px] text-gray-400 block">{new Date(req.submittedAt).toLocaleString()}</span>
+                      <tr key={req.id} className="hover:bg-indigo-950/5 group/row transition-all duration-300">
+                        <td className="py-5 px-4 font-mono">
+                          <span className="text-slate-100 block font-bold text-xs">{req.id.replace('payout-', 'PO-').slice(0, 12)}</span>
+                          <span className="text-[9px] text-slate-500 block mt-0.5">{new Date(req.submittedAt).toLocaleString()}</span>
                         </td>
-                        <td className="py-4 px-3">
-                          <span className="text-white block font-bold">{req.artistName || 'Unnamed Artist'}</span>
-                          <span className="text-[9px] text-gray-400 block">{req.email}</span>
+                        <td className="py-5 px-4">
+                          <span className="text-slate-200 block font-black text-sm group-hover/row:text-white transition-colors">{req.artistName || 'Unnamed Artist'}</span>
+                          <span className="text-[10px] text-slate-500 block mt-0.5">{req.email}</span>
                         </td>
-                        <td className="py-4 px-3 font-mono font-black text-white text-[13px]">
+                        <td className="py-5 px-4 font-mono font-black text-[#f8fafc] text-sm">
                           {req.currency === 'INR' ? `₹${req.amount.toLocaleString()}` : `$${req.amount.toLocaleString()}`}
                         </td>
-                        <td className="py-4 px-3">
+                        <td className="py-5 px-4">
                           {req.paymentMethod === 'UPI' ? (
-                            <div>
-                              <span className="bg-[#6366F1]/10 text-[#6366F1] text-[9px] font-black rounded px-1.5 py-0.5 uppercase">UPI</span>
-                              <p className="text-gray-300 font-mono mt-1 pr-1 truncate text-[10px]" title={req.paymentDetails?.upiId}>{req.paymentDetails?.upiId || 'Not Configured'}</p>
+                            <div className="space-y-1">
+                              <span className="bg-indigo-500/15 text-indigo-300 text-[9px] font-extrabold rounded-lg px-2 py-0.5 uppercase tracking-wider border border-indigo-505/10 shadow-sm">
+                                UPI PINBOARD
+                              </span>
+                              <p className="text-slate-200 font-mono pr-1 truncate text-[11px]" title={req.paymentDetails?.upiId}>
+                                {req.paymentDetails?.upiId || 'Not Configured'}
+                              </p>
                             </div>
                           ) : (
-                            <div className="space-y-0.5 text-[10px]">
-                              <span className="bg-[#6366F1]/10 text-indigo-400 text-[9px] font-black rounded px-1.5 py-0.5 uppercase">Bank</span>
-                              <p className="text-white font-medium truncate mt-0.5">{req.paymentDetails?.bankName}</p>
-                              <p className="text-gray-300 font-mono truncate">Acc: {req.paymentDetails?.bankAccountNo}</p>
-                              <p className="text-gray-400 font-mono">IFSC: {req.paymentDetails?.bankIfsc}</p>
-                              <p className="text-gray-500 italic">Holder: {req.paymentDetails?.bankHolderName}</p>
+                            <div className="space-y-1 text-[10px]">
+                              <span className="bg-teal-500/15 text-teal-300 text-[9px] font-extrabold rounded-lg px-2 py-0.5 uppercase tracking-wider border border-teal-505/10 shadow-sm">
+                                BANK ROUTING
+                              </span>
+                              <p className="text-slate-200 font-bold truncate mt-1 text-[11px]">{req.paymentDetails?.bankName}</p>
+                              <p className="text-slate-400 font-mono">Acc: {req.paymentDetails?.bankAccountNo}</p>
+                              <p className="text-slate-500 font-mono">IFSC: {req.paymentDetails?.bankIfsc}</p>
+                              <p className="text-slate-500 italic block">Holder: {req.paymentDetails?.bankHolderName}</p>
                             </div>
                           )}
                         </td>
-                        <td className="py-4 px-3">
-                          {req.status === 'Pending' ? (
-                            <span className="text-yellow-400 font-black tracking-wide uppercase text-[10px] bg-yellow-500/10 px-1.5 py-0.5 rounded border border-yellow-500/20">Pending</span>
-                          ) : req.status === 'Approved' ? (
-                            <span className="text-[#6366F1] font-black tracking-wide uppercase text-[10px] bg-[#6366F1]/10 px-1.5 py-0.5 rounded border border-[#6366F1]/20">Approved</span>
-                          ) : (
-                            <span className="text-rose-400 font-black tracking-wide uppercase text-[10px] bg-rose-500/10 px-1.5 py-0.5 rounded border border-rose-500/20">Declined</span>
-                          )}
-                          {req.feedback && (
-                            <p className="text-[10px] text-gray-500 italic mt-1 font-light max-w-[150px] truncate" title={req.feedback}>Remarks: {req.feedback}</p>
-                          )}
+                        <td className="py-5 px-4">
+                          <div className="space-y-1.5">
+                            {req.status === 'Pending' ? (
+                              <span className="text-amber-400 font-extrabold tracking-wide uppercase text-[9px] bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/25 flex items-center gap-1.5 w-fit shadow-[0_0_12px_rgba(245,158,11,0.05)]">
+                                <span className="w-1.5 h-1.5 bg-amber-400 rounded-full animate-pulse" /> Pending approval
+                              </span>
+                            ) : req.status === 'Approved' ? (
+                              <span className="text-[#6366F1] font-extrabold tracking-wide uppercase text-[9px] bg-[#6366F1]/15 px-2.5 py-0.5 rounded-full border border-[#6366F1]/20 flex items-center gap-1.5 w-fit shadow-[0_0_12px_rgba(99,102,241,0.05)]">
+                                <span className="w-1.5 h-1.5 bg-[#6366F1] rounded-full" /> Approved PO
+                              </span>
+                            ) : (
+                              <span className="text-rose-400 font-extrabold tracking-wide uppercase text-[9px] bg-rose-500/10 px-2.5 py-0.5 rounded-full border border-rose-500/20 flex items-center gap-1.5 w-fit">
+                                <XCircle className="w-3.5 h-3.5" /> Declined
+                              </span>
+                            )}
+                            {req.feedback && (
+                              <p className="text-[10px] text-slate-450 italic font-mono max-w-[150px] truncate" title={req.feedback}>
+                                Log: {req.feedback}
+                              </p>
+                            )}
+                          </div>
                         </td>
-                        <td className="py-4 px-3">
+                        <td className="py-5 px-4">
                           {req.status === 'Pending' ? (
-                            <div className="space-y-2 text-left">
+                            <div className="space-y-2 text-left bg-slate-900/40 p-3 rounded-xl border border-slate-800/80 max-w-[240px] ml-auto">
                               <input
                                 type="text"
-                                placeholder="Write Transaction ID or rejection details..."
+                                placeholder="Audit remarks or Txn ID..."
                                 value={replyTextMap[req.id] || ''}
                                 onChange={(e) => setReplyTextMap(prev => ({ ...prev, [req.id]: e.target.value }))}
-                                className="w-full text-[10px] bg-black border border-white/10 p-1.5 rounded text-white focus:outline-none"
+                                className="w-full text-[10px] bg-slate-950 border border-slate-800 p-2 rounded-lg text-white font-medium focus:outline-none focus:border-indigo-500 placeholder:text-slate-650"
                               />
                               <div className="flex gap-2">
                                 <button
                                   type="button"
                                   onClick={() => onUpdatePayoutRequest(req.id, 'Approved', replyTextMap[req.id])}
-                                  className="flex-1 py-1 bg-[#6366F1] text-black hover:bg-indigo-400 font-bold rounded text-[9px] uppercase cursor-pointer"
+                                  className="flex-1 py-1.5 bg-indigo-500 hover:bg-indigo-400 text-white font-extrabold rounded-lg text-[9px] uppercase cursor-pointer shadow transition"
                                 >
                                   Approve
                                 </button>
                                 <button
                                   type="button"
                                   onClick={() => onUpdatePayoutRequest(req.id, 'Rejected', replyTextMap[req.id])}
-                                  className="flex-1 py-1 bg-rose-600 text-white hover:bg-rose-550 font-bold rounded text-[9px] uppercase cursor-pointer"
+                                  className="flex-1 py-1.5 bg-rose-600/20 hover:bg-rose-600/40 text-rose-300 font-extrabold rounded-lg text-[9px] uppercase cursor-pointer border border-rose-650"
                                 >
                                   Decline
                                 </button>
                               </div>
                             </div>
                           ) : (
-                            <span className="text-[10px] text-gray-600 italic">No further actions required</span>
+                            <span className="text-[10px] text-slate-550 italic font-semibold block text-right">Settled & Locked</span>
                           )}
                         </td>
                       </tr>

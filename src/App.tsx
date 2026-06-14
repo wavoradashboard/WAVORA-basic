@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { getStoredData, saveStoredData, AppState } from './data';
 import { User, Release, ArtistProfile, Label, RevenueReport, SupportQuery, OacApplication, TrackStatus, PayoutRequest, Plan } from './types';
 import { supabase, isolatedAdminSupabase } from './supabase';
@@ -1482,9 +1483,11 @@ export default function App() {
   const renderCurrentView = () => {
     if (!currentUser) return null;
 
+    let viewComponent: React.ReactNode;
+
     switch (currentTab) {
       case 'home':
-        return (
+        viewComponent = (
           <DashboardHome
             currentUser={currentUser}
             releases={releases}
@@ -1494,8 +1497,9 @@ export default function App() {
             notifications={notifications}
           />
         );
+        break;
       case 'new-release':
-        return (
+        viewComponent = (
           <NewReleaseWizard
             currentUser={currentUser}
             managedArtists={artists}
@@ -1509,8 +1513,9 @@ export default function App() {
             }}
           />
         );
+        break;
       case 'manage-artists':
-        return (
+        viewComponent = (
           <ManageArtists
             currentUser={currentUser}
             users={users}
@@ -1520,8 +1525,9 @@ export default function App() {
             isImpersonating={isImpersonating}
           />
         );
+        break;
       case 'member-pool':
-        return (
+        viewComponent = (
           <MemberPool
             currentUser={currentUser}
             users={users}
@@ -1529,8 +1535,9 @@ export default function App() {
             onUpdateUser={handleUpdateUser}
           />
         );
+        break;
       case 'manage-labels':
-        return (
+        viewComponent = (
           <ManageLabels
             currentUser={currentUser}
             users={users}
@@ -1540,8 +1547,9 @@ export default function App() {
             isImpersonating={isImpersonating}
           />
         );
+        break;
       case 'catalogue':
-        return (
+        viewComponent = (
           <CatalogueView
             currentUser={currentUser}
             releases={releases}
@@ -1549,8 +1557,9 @@ export default function App() {
             onEditRelease={handleEditRelease}
           />
         );
+        break;
       case 'revenue':
-        return (
+        viewComponent = (
           <RevenuePage
             currentUser={currentUser}
             revenueReports={revenueReports}
@@ -1560,8 +1569,9 @@ export default function App() {
             onUpdateUser={handleUpdateUser}
           />
         );
+        break;
       case 'support':
-        return (
+        viewComponent = (
           <SupportPage
             currentUser={currentUser}
             supportQueries={queries}
@@ -1570,8 +1580,9 @@ export default function App() {
             onSubmitOacApplication={handleSubmitOacApplication}
           />
         );
+        break;
       case 'admin-panel':
-        return (
+        viewComponent = (
           <AdminPanel
             currentUser={currentUser}
             users={users}
@@ -1598,14 +1609,30 @@ export default function App() {
             onUpdatePayoutRequest={handleUpdatePayoutRequest}
           />
         );
+        break;
       default:
-        return (
+        viewComponent = (
           <div className="p-8 text-center text-gray-400">
             <h3 className="font-bold text-lg">Work in Progress</h3>
             <p className="text-xs mt-1">This module is under construction.</p>
           </div>
         );
     }
+
+    return (
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={currentTab}
+          initial={{ opacity: 0, y: 15, scale: 0.98 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: -15, scale: 0.98 }}
+          transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+          className="w-full h-full flex flex-col"
+        >
+          {viewComponent}
+        </motion.div>
+      </AnimatePresence>
+    );
   };
 
   // Unauthenticated screen
@@ -1691,8 +1718,8 @@ export default function App() {
                   {currentTab === 'admin-panel' ? 'Administration Suite' : 'Workspace'}
                 </span>
               </h1>
-              <p className="text-[8px] md:text-[11px] text-gray-500 font-mono uppercase tracking-widest hidden sm:block mt-0.5">
-                {(currentUser.email === 'admin@g.g' || currentUser.email === 'wavoradashboard@gmail.com') ? 'SYSTEM_ROOT_ADMIN_PORT' : `Artist UID: #${currentUser.email.split('@')[0].toUpperCase()}-WA`}
+              <p className="text-[8px] md:text-[11px] text-gray-400 font-medium uppercase tracking-widest hidden sm:block mt-0.5">
+                {(currentUser.email === 'admin@g.g' || currentUser.email === 'wavoradashboard@gmail.com') ? 'System Administrator Portal' : 'Standard Artist Account'}
               </p>
             </div>
           </div>
@@ -1700,9 +1727,9 @@ export default function App() {
           <div className="flex items-center gap-2 md:gap-4">
             <div className="text-right hidden md:block">
               <p className="text-xs font-bold text-gray-350">{currentUser.artistName}</p>
-              <p className="text-[10px] text-[#6366F1] flex items-center gap-1 justify-end font-mono">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#6366F1] animate-ping" />
-                VERIFIED & ACTIVE
+              <p className="text-[10px] text-indigo-650 flex items-center gap-1 justify-end font-medium">
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 animate-pulse" />
+                Verified Artist Account
               </p>
             </div>
 
@@ -1747,11 +1774,11 @@ export default function App() {
           {renderCurrentView()}
         </div>
 
-        {/* Editorial Footer */}
+        {/* Friendly Footer */}
         <footer className="py-4 px-6 lg:px-8 bg-transparent border-t border-white/10 flex flex-col lg:flex-row items-center justify-between text-[9px] uppercase tracking-[0.2em] text-gray-500 font-bold gap-3 mt-auto shrink-0" id="editorial_footer">
           <div className="flex gap-4 lg:gap-6">
-            <span>v4.2.0-STABLE</span>
-            <span>System Status: <span className="text-[#6366F1] underline">Operational</span></span>
+            <span>© 2026 Wavora Live</span>
+            <span>Status: <span className="text-emerald-600 underline">Active & Guarded</span></span>
           </div>
           <div className="flex flex-wrap gap-4 md:gap-6 justify-center">
             <button type="button" onClick={() => setCurrentTab('support')} className="hover:text-white cursor-pointer transition">Official Artist Channel Request</button>

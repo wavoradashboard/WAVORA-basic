@@ -1,50 +1,515 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&family=Inter:wght@300..700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300..800&family=Inter:wght@300..700&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Space Grotesk", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Plus Jakarta Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 }
 
-/* Base resets in alignment with Cosmic Midnight Aesthetic styling */
+/* =============================================================
+   COSMIC EMERALD & CHAMPAGNE AMBER GOLD (PREMIUM LUXURY LUME)
+   This is an extremely rich, high-contrast, organic scifi theme
+   that shifts the interface colors entirely out of neon pink/blue.
+   ============================================================= */
+
+@keyframes aurora-flow {
+  0% {
+    background-position: 0% 50%, 100% 50%, 50% 100%;
+  }
+  50% {
+    background-position: 100% 50%, 0% 50%, 50% 0%;
+  }
+  100% {
+    background-position: 0% 50%, 100% 50%, 50% 100%;
+  }
+}
+
+@keyframes gold-hologram-glow {
+  0%, 100% {
+    text-shadow: 0 0 10px rgba(16, 185, 129, 0.4), 0 0 20px rgba(245, 158, 11, 0.2);
+  }
+  50% {
+    text-shadow: 0 0 22px rgba(16, 185, 129, 0.8), 0 0 35px rgba(245, 158, 11, 0.7), 0 0 10px rgba(52, 211, 153, 0.6);
+  }
+}
+
+@keyframes grid-pulse {
+  0%, 100% {
+    opacity: 0.11;
+  }
+  50% {
+    opacity: 0.24;
+  }
+}
+
+@keyframes subtle-float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-5px) rotate(0.4deg);
+  }
+}
+
+@keyframes glow-breathe {
+  0%, 100% {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.03);
+  }
+  50% {
+    box-shadow: 0 12px 45px rgba(0, 0, 0, 0.7), 0 0 22px rgba(16, 185, 129, 0.12), 0 0 0 1px rgba(16, 185, 129, 0.22);
+  }
+}
+
+/* Base Body settings - Royal Emerald Obsidian Abyss Vibe */
 body {
-  background: 
-    linear-gradient(to bottom right, rgba(16, 17, 36, 1) 0%, rgba(3, 3, 10, 1) 100%),
-    radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.15), transparent 25%),
-    radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.15), transparent 25%);
+  background-color: #020503; /* True Deep Obsidian Emerald Moss */
+  background-image: 
+    radial-gradient(circle at 10% 15%, rgba(16, 185, 129, 0.18) 0%, transparent 45%),
+    radial-gradient(circle at 90% 85%, rgba(245, 158, 11, 0.14) 0%, transparent 45%),
+    radial-gradient(circle at 50% 50%, rgba(52, 211, 153, 0.08) 0%, transparent 55%),
+    linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7));
+  background-size: 200% 200%;
   background-attachment: fixed;
-  color: #FFFFFF;
+  animation: aurora-flow 25s infinite ease-in-out;
+  color: #f1f5f9;
   font-family: var(--font-sans);
   overflow-x: hidden;
   margin: 0;
   padding: 0;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Custom premium electric indigo and midnight scrub scrollbars */
+/* Synthesizer Matrix-like background lines grid */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.005) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.005) 1px, transparent 1px);
+  background-size: 38px 38px;
+  pointer-events: none;
+  z-index: 0;
+  animation: grid-pulse 6s infinite ease-in-out;
+}
+
+/* Cozy Warm Liquid Scrollbars */
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 7px;
+  height: 7px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: rgba(2, 5, 3, 0.9);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255,255,255,0.1);
-  border-radius: 9px;
+  background: linear-gradient(180deg, rgba(16, 185, 129, 0.4) 0%, rgba(245, 158, 11, 0.4) 100%);
+  border: 1px solid #020503;
+  border-radius: 99px;
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.4);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #6366F1;
+  background: linear-gradient(180deg, #10b981 0%, #f59e0b 100%);
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.8);
 }
 
-/* Custom subtle animation class */
-@keyframes ambient-pulse {
-  0%, 100% { opacity: 0.1; }
-  50% { opacity: 0.2; }
+/* -------------------------------------------------------------
+   CORE PORTAL & VIEWPORT LAYOUT RE-IMAGINING (EMERALD AMBER)
+   ------------------------------------------------------------- */
+
+#app_root_layout {
+  background-color: transparent !important;
+  color: #f1f5f9 !important;
+  position: relative;
+  z-index: 10;
 }
 
-.ambient-bg-glow {
-  animation: ambient-pulse 6s infinite ease-in-out;
+/* Main Workspace Core: Obsidian slab with emerald top emission and amber side highlights */
+#app_main_wrapper > div {
+  background: rgba(4, 8, 5, 0.8) !important;
+  backdrop-filter: blur(30px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.03) !important;
+  border-top: 1px solid rgba(16, 185, 129, 0.28) !important;
+  border-left: 1px solid rgba(245, 158, 11, 0.16) !important;
+  box-shadow: 0 35px 90px rgba(0, 0, 0, 0.85), 0 0 35px rgba(16, 185, 129, 0.06) !important;
+  border-radius: 1.75rem !important;
+  animation: glow-breathe 8s infinite ease-in-out !important;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Left sidebar overrides: Deep jade cockpit list wrapping */
+#app_sidebar, 
+#mobile_header_full_overlay {
+  background: rgba(2, 4, 3, 0.92) !important;
+  backdrop-filter: blur(30px) !important;
+  border-right: 1px solid rgba(16, 185, 129, 0.1) !important;
+  box-shadow: 8px 0 30px rgba(0, 0, 0, 0.8) !important;
+}
+
+#sidebar_header_wrapper {
+  background: linear-gradient(180deg, rgba(16, 185, 129, 0.08) 0%, transparent 100%) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03) !important;
+}
+
+/* Sidebar navigation buttons */
+#sidebar_nav button,
+#mobile_nav_menu button {
+  color: #94a3b8 !important;
+  font-weight: 500 !important;
+  border-radius: 0.85rem !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+#sidebar_nav button:hover,
+#mobile_nav_menu button:hover {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.02) 0%, rgba(16, 185, 129, 0.05) 100%) !important;
+  color: #34d399 !important; /* Fresh Mint Green */
+  transform: translateX(4px);
+  box-shadow: -2px 0 8px rgba(16, 185, 129, 0.15);
+}
+
+/* Active navigation item: Gold Emerald gradient list bar with smooth floating motion */
+#sidebar_nav button[id*="active"],
+#sidebar_nav [class*="bg-[#6366F1]/10"],
+#mobile_nav_menu button[class*="bg-[#6366F1]/10"] {
+  background: linear-gradient(90deg, rgba(16, 185, 129, 0.22) 0%, rgba(245, 158, 11, 0.04) 100%) !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  border-left: 4px solid #10b981 !important;
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.3) !important;
+  animation: subtle-float 4s infinite ease-in-out;
+  transform: translateX(5px);
+}
+
+/* Header & Top Navigation Panel */
+#editorial_top_bar {
+  background: rgba(2, 4, 3, 0.61) !important;
+  backdrop-filter: blur(20px) !important;
+  border-bottom: 1px solid rgba(16, 185, 129, 0.1) !important;
+}
+
+/* #editorial_top_bar h1 span {
+  animation: gold-hologram-glow 4s infinite ease-in-out;
+} */
+
+/* Responsive Footer */
+#editorial_footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.03) !important;
+  background: rgba(1, 3, 2, 0.85) !important;
+  color: #52525b !important;
+}
+
+#editorial_footer button {
+  color: #a1a1aa !important;
+}
+#editorial_footer button:hover {
+  color: #10b981 !important;
+  text-shadow: 0 0 8px rgba(16, 185, 129, 0.8);
+}
+
+
+/* =============================================================
+   CHAMPAGNE GLASS MOSS CARDS & LAYOUT BENTO SLABS
+   ============================================================= */
+
+.bg-white\/2, 
+.bg-white\/5,
+.bg-white\/10,
+.bg-slate-900,
+.bg-\[\#070710\],
+.bg-\[\#1c1c1c\],
+.bg-\[\#181818\],
+[id^="metric_"],
+[id^="support_query_card_"],
+.backdrop-blur-md {
+  background: rgba(6, 11, 8, 0.74) !important;
+  backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.03) !important;
+  border-top: 1px solid rgba(16, 185, 129, 0.15) !important;
+  border-left: 1px solid rgba(245, 158, 11, 0.09) !important;
+  border-radius: 1.25rem !important;
+  color: #e2e8f0 !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* Magnificent hover zoom and light highlights */
+.bg-white\/2:hover,
+.bg-white\/5:hover,
+.bg-white\/10:hover,
+[id^="metric_"]:hover,
+[id^="support_query_card_"]:hover {
+  transform: translateY(-4px) scale(1.01) !important;
+  border-color: rgba(16, 185, 129, 0.45) !important;
+  box-shadow: 0 18px 35px rgba(0, 0, 0, 0.65), 0 0 18px rgba(16, 185, 129, 0.25) !important;
+  background: rgba(10, 18, 13, 0.82) !important;
+}
+
+/* High dynamic contrast text headers inside bento blocks */
+[id^="metric_"] .text-3xl {
+  font-family: var(--font-sans);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  background: linear-gradient(135deg, #ffffff 40%, #10b981 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 25px rgba(16, 185, 129, 0.35);
+}
+
+/* Universal Typography Accessibility Colors */
+.text-white, 
+.text-gray-100, 
+.text-gray-250, .text-gray-200, 
+h1, h2, h3, h4, h5, h6 {
+  color: #f8fafc !important;
+}
+
+.text-gray-400, 
+.text-gray-350, 
+.text-gray-450,
+.text-slate-700 {
+  color: #cbd5e1 !important;
+}
+
+.text-gray-500, 
+.text-gray-550 {
+  color: #92a498 !important; /* Elegant Forest Moss Muted */
+}
+
+/* Re-routing primary color accents classes to Amber & Emerald gold */
+.text-\[\#6366F1\] {
+  color: #10b981 !important; /* Lush Emerald Mint */
+}
+
+.bg-\[\#6366F1\],
+.bg-[#6366F1],
+.hover\:bg-\[\#6366F1\]:hover {
+  background-color: #10b981 !important;
+  color: #010402 !important;
+  font-weight: 850 !important;
+}
+
+.bg-white:hover {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.bg-white\/5 {
+  background-color: rgba(255, 255, 255, 0.03) !important;
+  border-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+
+/* =============================================================
+   TOTALLY REINVENTED LUXURIOUS SPACER ROW TABLES
+   ============================================================= */
+
+/* Rows float separated in beautiful obsidian capsules */
+table {
+  border-spacing: 0 10px !important;
+  border-collapse: separate !important;
+  width: 100% !important;
+}
+
+.overflow-x-auto {
+  background: transparent !important;
+  padding: 0.15rem;
+}
+
+/* Beautiful gold titles for heads with precise tracker lines */
+thead {
+  background: transparent !important;
+}
+
+thead tr {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+thead th {
+  padding: 1rem 1.15rem !important;
+  font-size: 0.72rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.2em !important;
+  text-transform: uppercase !important;
+  color: #fbbf24 !important; /* Warm Amber Champagne Gold */
+  border: none !important;
+  border-bottom: 1px dashed rgba(250, 204, 21, 0.3) !important;
+}
+
+/* Rows display style */
+tbody tr {
+  background: rgba(6, 12, 8, 0.7) !important;
+  backdrop-filter: blur(10px) !important;
+  border-radius: 0.85rem !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35) !important;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid rgba(255, 255, 255, 0.03) !important;
+}
+
+tbody tr:hover {
+  background: rgba(10, 20, 14, 0.85) !important;
+  transform: translateY(-2px) scale(1.006);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.55), 0 0 12px rgba(16, 185, 129, 0.18) !important;
+  border-color: rgba(16, 185, 129, 0.35) !important;
+}
+
+tbody td {
+  padding: 1.1rem 1.15rem !important;
+  border: none !important;
+  color: #cbd5e1 !important;
+}
+
+tbody td:first-child {
+  border-top-left-radius: 0.85rem !important;
+  border-bottom-left-radius: 0.85rem !important;
+  border-left: 3px solid transparent !important;
+}
+
+tbody tr:hover td:first-child {
+  border-left-color: #10b981 !important;
+}
+
+tbody td:last-child {
+  border-top-right-radius: 0.85rem !important;
+  border-bottom-right-radius: 0.85rem !important;
+}
+
+
+/* =============================================================
+   INPUTS, EXPAND WELLS & DIGITAL CAP FIELDS
+   ============================================================= */
+
+/* Moss pill fields custom focused styling */
+input, 
+select, 
+textarea {
+  background: rgba(2, 4, 3, 0.9) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  color: #f1f5f9 !important;
+  border-radius: 0.85rem !important;
+  padding: 0.75rem 1rem !important;
+  font-family: var(--font-sans);
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.6) !important;
+  transition: all 0.25s ease;
+}
+
+input:focus, 
+select:focus, 
+textarea:focus {
+  border-color: #10b981 !important;
+  outline: none !important;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2), inset 0 1px 3px rgba(0, 0, 0, 0.5), 0 0 15px rgba(16, 185, 129, 0.25) !important;
+  background-color: rgba(4, 9, 6, 0.98) !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #4c5e53 !important;
+}
+
+select option {
+  background-color: #020403 !important;
+  color: #cbd5e1;
+}
+
+
+/* =============================================================
+   HIGH LUMINOSITY GOLD & EMERALD CTA BUTTONS (LIQUID ROYAL SHINE)
+   ============================================================= */
+
+/* Gradient using deep rich Amber to bright Golden Lume and Emerald ends */
+button[class*="bg-white text-black"],
+#btn_home_quick_launch,
+#btn_auth_submit {
+  background: linear-gradient(135deg, #10b981 0%, #f59e0b 50%, #fbbf24 100%) !important;
+  color: #010502 !important; /* High Contrast Black text for absolute legibility on high gold */
+  font-weight: 850 !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+  border-radius: 0.85rem !important;
+  border: none !important;
+  padding: 0.75rem 1.5rem !important;
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.35) !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  cursor: pointer !important;
+}
+
+button[class*="bg-white text-black"]:hover,
+#btn_home_quick_launch:hover,
+#btn_auth_submit:hover {
+  transform: translateY(-2px) scale(1.02) !important;
+  box-shadow: 0 0 30px rgba(245, 158, 11, 0.65), 0 8px 16px rgba(0, 0, 0, 0.45) !important;
+}
+
+button[class*="bg-white text-black"]:active,
+#btn_home_quick_launch:active,
+#btn_auth_submit:active {
+  transform: translateY(1px) scale(0.98) !important;
+}
+
+
+/* =============================================================
+   MODAL SUITES OVERLAYS
+   ============================================================= */
+
+div[class*="bg-black/80"],
+div[class*="bg-[#070710]/95"] {
+  background-color: rgba(1, 2, 1, 0.88) !important;
+  backdrop-filter: blur(20px) !important;
+}
+
+div[class*="bg-[#0a0f1d]"][class*="rounded-3xl"],
+div[class*="bg-zinc-950"],
+#login_animated_box {
+  background: rgba(4, 9, 6, 0.9) !important;
+  backdrop-filter: blur(35px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  border-top: 1px solid rgba(16, 185, 129, 0.25) !important;
+  color: #f1f5f9 !important;
+  border-radius: 1.5rem !important;
+  box-shadow: 0 35px 90px rgba(0, 0, 0, 0.9), 0 0 40px rgba(16, 185, 129, 0.15) !important;
+  animation: glow-breathe 7s infinite ease-in-out !important;
+}
+
+
+/* =============================================================
+   MINT JADE BADGES AND ALERTS
+   ============================================================= */
+
+.bg-green-500\/10,
+.bg-emerald-500\/10 {
+  background: rgba(16, 185, 129, 0.18) !important;
+  color: #34d399 !important;
+  border: 1px solid rgba(16, 185, 129, 0.35) !important;
+  border-radius: 99px !important;
+  text-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+}
+
+.bg-yellow-500\/10,
+.bg-amber-500\/10 {
+  background: rgba(245, 158, 11, 0.18) !important;
+  color: #fbbf24 !important;
+  border: 1px solid rgba(245, 158, 11, 0.35) !important;
+  border-radius: 99px !important;
+  text-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
+}
+
+.bg-red-500\/10,
+.bg-rose-500\/10 {
+  background: rgba(239, 68, 68, 0.18) !important;
+  color: #f87171 !important;
+  border: 1px solid rgba(239, 68, 68, 0.4) !important;
+  border-radius: 99px !important;
+  text-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+}
+
+.hologram-text {
+  animation: gold-hologram-glow 4s infinite ease-in-out;
+}
+
+.float-item {
+  animation: subtle-float 5s infinite ease-in-out;
 }

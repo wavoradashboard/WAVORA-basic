@@ -94,7 +94,7 @@ export default function Sidebar({
               <div className="w-7 h-7 md:w-8 md:h-8 bg-[#6366F1] rounded-full flex items-center justify-center font-black text-black text-xs md:text-sm">W</div>
               <div>
                 <span className="text-sm md:text-base font-black tracking-tighter uppercase text-white">Wavora <span className="text-[#6366F1]">Live</span></span>
-                <div className="text-[8px] md:text-[9px] text-[#6366F1] font-mono tracking-widest uppercase">Digital Ingestions</div>
+                <div className="text-[8px] md:text-[9px] text-[#6366F1] font-mono tracking-widest uppercase">Artist Portal</div>
               </div>
             </div>
             <button
@@ -163,7 +163,7 @@ export default function Sidebar({
               </nav>
             </div>
 
-            {/* Sign Out Console */}
+            {/* Sign Out */}
             <div className="pt-4 border-t border-white/10">
               <button
                 type="button"
@@ -172,7 +172,7 @@ export default function Sidebar({
                 id="btn_sidebar_logout_mobile"
               >
                 <LogOut className="w-4 h-4 text-red-500" />
-                <span>Sign Out Console</span>
+                <span>Sign Out</span>
               </button>
             </div>
           </div>
@@ -193,7 +193,7 @@ export default function Sidebar({
               </div>
               <div className="text-left">
                 <span className="text-lg font-black tracking-tighter uppercase text-white">Wavora <span className="text-[#6366F1]">Live</span></span>
-                <div className="text-[10px] text-gray-500 font-mono tracking-widest uppercase">Digital DSP Pipeline</div>
+                <div className="text-[10px] text-gray-500 font-mono tracking-widest uppercase">Music Distribution</div>
               </div>
             </div>
             <button
@@ -269,7 +269,7 @@ export default function Sidebar({
             id="btn_sidebar_logout"
           >
             <LogOut className="w-4 h-4 text-red-500" />
-            <span>Sign Out Console</span>
+            <span>Sign Out</span>
           </button>
         </div>
       </aside>

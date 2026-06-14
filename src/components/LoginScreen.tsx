@@ -212,7 +212,7 @@ export default function LoginScreen({ onLogin, onRegister, allUsers }: LoginScre
         <div className="md:col-span-5 text-left space-y-6" id="brand_info_col">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#6366F1]/10 border border-[#6366F1]/20 text-xs text-[#6366F1] font-mono tracking-widest">
             <AudioLines className="w-3.5 h-3.5" />
-            VIBRANT WEB-DISTRIBUTION
+            GLOBAL MUSIC DISTRIBUTION
           </div>
           
           <h1 className="text-4xl md:text-5xl font-black tracking-tighter uppercase text-white leading-tight" id="main_logo_wavora">
@@ -259,7 +259,7 @@ export default function LoginScreen({ onLogin, onRegister, allUsers }: LoginScre
             {/* Interactive Auth Tabs - Removed tab switching since only Admin can add users */}
             <div className="flex items-center gap-2 mb-6 border-b border-white/10 pb-4" id="login_tabs">
               <LogIn className="w-5 h-5 text-[#6366F1]" />
-              <h2 className="text-sm font-black uppercase tracking-widest text-[#6366F1]">Access Digital Pipeline</h2>
+              <h2 className="text-sm font-black uppercase tracking-widest text-[#6366F1]">Sign In to Wavora Live</h2>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4" id="auth_form">
@@ -323,12 +323,12 @@ export default function LoginScreen({ onLogin, onRegister, allUsers }: LoginScre
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    Contacting Supabase Auth...
+                    Connecting to portal...
                   </span>
                 ) : (
                   <>
                     <LogIn className="w-4 h-4" />
-                    Access Digital Pipeline
+                    Sign In to Account
                   </>
                 )}
               </button>

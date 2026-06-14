@@ -448,56 +448,61 @@ export default function RevenuePage({
           </div>
 
           {/* User's Withdrawal History */}
-          <div className="bg-[#0f1424]/40 p-5 rounded-3xl border border-slate-900 space-y-4" id="withdrawal_requests_table_box">
-            <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
-              <Clock className="w-4 h-4 text-indigo-400" /> Payout & Settlement Logs
+          <div className="bg-slate-950/40 backdrop-blur-md p-6 rounded-3xl border border-slate-800/60 shadow-2xl space-y-4" id="withdrawal_requests_table_box">
+            <h3 className="text-xs font-black text-slate-300 uppercase tracking-widest flex items-center gap-2">
+              <Clock className="w-4 h-4 text-indigo-400 animate-pulse" /> Payout & Settlement Logs
             </h3>
 
             {userPayoutRequests.length === 0 ? (
-              <p className="text-xs text-slate-500 text-center py-4">No payout requests registered yet.</p>
+              <p className="text-xs text-slate-500 text-center py-6">No payout requests registered yet.</p>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse text-xs">
+              <div className="overflow-x-auto rounded-xl">
+                <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="border-b border-slate-900 text-slate-500 font-black tracking-widest text-[9px] uppercase">
-                      <th className="py-2.1">Request ID</th>
-                      <th className="py-2.1">Date Filing</th>
-                      <th className="py-2.1">Method</th>
-                      <th className="py-2.1 text-right">Amount Requested</th>
-                      <th className="py-2.1 pl-4">Audit Status</th>
+                    <tr className="bg-slate-900/60 border-b border-slate-800/50 text-[#818CF8] font-black tracking-widest text-[9px] uppercase">
+                      <th className="px-4 py-3">Request ID</th>
+                      <th className="px-4 py-3">Date Filing</th>
+                      <th className="px-4 py-3">Method</th>
+                      <th className="px-4 py-3 text-right">Amount Requested</th>
+                      <th className="px-4 py-3 pl-6">Audit Status</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="divide-y divide-slate-800/30">
                     {userPayoutRequests.map((req) => (
-                      <tr key={req.id} className="border-b border-rose-950/5 hover:bg-slate-900/25 transition">
-                        <td className="py-3 font-mono font-bold text-slate-400" title={req.id}>{req.id}</td>
-                        <td className="py-3 text-slate-400">{new Date(req.submittedAt).toLocaleDateString()}</td>
-                        <td className="py-3 text-white uppercase">
-                          <span className="bg-slate-900 text-slate-300 font-bold rounded text-[9px] px-1.5 py-0.5">
+                      <tr key={req.id} className="hover:bg-indigo-950/5 transition-all duration-300 group/row">
+                        <td className="px-4 py-4 font-mono font-bold text-slate-400 text-xs group-hover/row:text-slate-300" title={req.id}>
+                          {req.id.replace('payout-', 'PO-').slice(0, 12)}
+                        </td>
+                        <td className="px-4 py-4 text-slate-300 text-xs">{new Date(req.submittedAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}</td>
+                        <td className="px-4 py-4">
+                          <span className="bg-slate-900/80 text-slate-300 font-extrabold rounded-lg text-[9px] px-2 py-1 border border-slate-800 uppercase tracking-wider">
                             {req.paymentMethod}
                           </span>
                         </td>
-                        <td className="py-3 text-right font-bold text-gray-200 mt-1">
+                        <td className="px-4 py-4 text-right font-extrabold text-[#f8fafc] text-xs">
                           {formatAmount(req.amount, req.currency)}
                         </td>
-                        <td className="py-3 pl-4">
-                          <div className="space-y-0.5">
+                        <td className="px-4 py-4 pl-6">
+                          <div className="space-y-1">
                             {req.status === 'Pending' ? (
-                              <span className="text-yellow-400 font-black flex items-center gap-1 text-[10px]">
-                                <Clock className="w-3.5 h-3.5 text-yellow-500" /> Pending Approval
+                              <span className="text-amber-400 font-extrabold flex items-center gap-1.5 text-[10px] bg-amber-500/10 border border-amber-500/25 px-2.5 py-1 rounded-full w-fit shadow-[0_0_12px_rgba(245,158,11,0.05)]">
+                                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping" />
+                                Pending Review
                               </span>
                             ) : req.status === 'Approved' ? (
-                              <span className="text-indigo-400 font-black flex items-center gap-1 text-[10px]">
-                                <CheckCircle className="w-3.5 h-3.5 text-indigo-400" /> Dispatched
+                              <span className="text-emerald-400 font-extrabold flex items-center gap-1.5 text-[10px] bg-emerald-500/10 border border-emerald-500/25 px-2.5 py-1 rounded-full w-fit shadow-[0_0_12px_rgba(16,185,129,0.05)]">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                                Settled & Dispatched
                               </span>
                             ) : (
-                              <span className="text-rose-400 font-black flex items-center gap-1 text-[10px]">
-                                <XCircle className="w-3.5 h-3.5 text-rose-400" /> Declined
+                              <span className="text-rose-405 font-extrabold flex items-center gap-1.5 text-[10px] bg-rose-500/10 border border-rose-500/25 px-2.5 py-1 rounded-full w-fit">
+                                <XCircle className="w-3.5 h-3.5 text-rose-450" />
+                                Declined
                               </span>
                             )}
                             {req.feedback && (
-                              <p className="text-[10px] text-slate-500 italic mt-0.5 font-light" title={req.feedback}>
-                                Remarks: {req.feedback}
+                              <p className="text-[10px] text-slate-450 italic font-mono pl-1" title={req.feedback}>
+                                Audit remarks: {req.feedback}
                               </p>
                             )}
                           </div>

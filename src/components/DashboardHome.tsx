@@ -54,7 +54,7 @@ export default function DashboardHome({
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 p-5 md:p-8 bg-white/2 rounded-3xl border border-white/10 relative overflow-hidden" id="home_welcome_banner">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_0%_0%,rgba(29,185,84,0.06),transparent_50%)] pointer-events-none" />
         <div className="relative z-10 space-y-1.5">
-          <div className="text-[9px] md:text-[10px] text-[#6366F1] font-mono tracking-widest uppercase">Digital DSP Pipeline Ingestion</div>
+          <div className="text-[9px] md:text-[10px] text-[#6366F1] font-bold tracking-widest uppercase">Artist Welcome Dashboard</div>
           <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-white uppercase tracking-tighter" id="home_welcome_header">
             Welcome, <span className="text-[#6366F1]">{currentUser.artistName}</span>
           </h2>
@@ -85,7 +85,7 @@ export default function DashboardHome({
               <p className="text-[10px] text-gray-600 italic">No C lines authorized.</p>
             ) : (
               (currentUser.allowedCLines || []).map((line, i) => (
-                <div key={i} className="text-[10px] text-gray-300 font-mono bg-black p-2 rounded border border-white/5 truncate">
+                <div key={i} className="text-[10px] text-slate-700 font-medium bg-slate-50 p-2.5 rounded-xl border border-slate-200 truncate">
                   © {line}
                 </div>
               ))
@@ -99,7 +99,7 @@ export default function DashboardHome({
               <p className="text-[10px] text-gray-600 italic">No P lines authorized.</p>
             ) : (
               (currentUser.allowedPLines || []).map((line, i) => (
-                <div key={i} className="text-[10px] text-gray-300 font-mono bg-black p-2 rounded border border-white/5 truncate">
+                <div key={i} className="text-[10px] text-slate-700 font-medium bg-slate-50 p-2.5 rounded-xl border border-slate-200 truncate">
                   ℗ {line}
                 </div>
               ))
