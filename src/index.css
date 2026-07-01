@@ -115,6 +115,30 @@ body::before {
   box-shadow: 0 0 12px rgba(16, 185, 129, 0.8);
 }
 
+/* Specifically ensure the sidebar navigation is scrollable and has a visible track */
+#sidebar_nav {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(16, 185, 129, 0.4) rgba(2, 5, 3, 0.5);
+}
+
+#sidebar_nav::-webkit-scrollbar {
+  width: 5px;
+}
+
+#sidebar_nav::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 10px;
+}
+
+#sidebar_nav::-webkit-scrollbar-thumb {
+  background: rgba(16, 185, 129, 0.3);
+  border-radius: 10px;
+}
+
+#sidebar_nav::-webkit-scrollbar-thumb:hover {
+  background: rgba(16, 185, 129, 0.6);
+}
+
 /* -------------------------------------------------------------
    CORE PORTAL & VIEWPORT LAYOUT RE-IMAGINING (EMERALD AMBER)
    ------------------------------------------------------------- */

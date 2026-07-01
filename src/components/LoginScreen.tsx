@@ -15,7 +15,7 @@ export default function LoginScreen({ onLogin, onRegister, allUsers }: LoginScre
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [artistName, setArtistName] = useState('');
-  const [plan, setPlan] = useState<Plan>('Basic');
+  const [plan, setPlan] = useState<Plan>('Free');
   const [error, setError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const [loading, setLoading] = useState(false);
@@ -117,7 +117,7 @@ export default function LoginScreen({ onLogin, onRegister, allUsers }: LoginScre
             id: u.id,
             email: u.email!,
             artistName: metadata.artistName || u.email!.split('@')[0],
-            plan: metadata.plan || 'Basic',
+            plan: metadata.plan || 'Free',
             isApproved: isApproved,
             registeredAt: u.created_at || new Date().toISOString()
           };
@@ -279,13 +279,13 @@ export default function LoginScreen({ onLogin, onRegister, allUsers }: LoginScre
 
               <div className="space-y-1.5" id="login_email_group">
                 <label className="block text-[10px] font-bold text-gray-450 uppercase tracking-widest">Email Address</label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-550">
-                    <Mail className="w-4 h-4 text-gray-450" />
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 rounded-xl bg-black border border-white/10 text-gray-450 flex items-center justify-center">
+                    <Mail className="w-4 h-4" />
                   </div>
                   <input
                     type="email"
-                    className="w-full bg-black border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-xs text-white focus:outline-none focus:border-[#6366F1] transition"
+                    className="flex-1 bg-black border border-white/10 rounded-xl py-2.5 px-4 text-xs text-white focus:outline-none focus:border-[#6366F1] transition"
                     placeholder="e.g. artist@wavora.live"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -296,13 +296,13 @@ export default function LoginScreen({ onLogin, onRegister, allUsers }: LoginScre
 
               <div className="space-y-1.5" id="login_pass_group">
                 <label className="block text-[10px] font-bold text-gray-450 uppercase tracking-widest">Password</label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-550">
-                    <Lock className="w-4 h-4 text-gray-450" />
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 rounded-xl bg-black border border-white/10 text-gray-450 flex items-center justify-center">
+                    <Lock className="w-4 h-4" />
                   </div>
                   <input
                     type="password"
-                    className="w-full bg-black border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-xs text-white focus:outline-none focus:border-[#6366F1] transition"
+                    className="flex-1 bg-black border border-white/10 rounded-xl py-2.5 px-4 text-xs text-white focus:outline-none focus:border-[#6366F1] transition"
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}

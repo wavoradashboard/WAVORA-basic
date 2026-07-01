@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { Users, Search, Edit2, Key, Info, CheckCircle, XCircle } from 'lucide-react';
+import { Users, Search, Edit2, Key, Info, CheckCircle, XCircle, Trash2 } from 'lucide-react';
 import { User, Plan } from '../types';
 import { supabase } from '../supabase';
 
@@ -9,13 +9,18 @@ interface MemberPoolProps {
   users: User[];
   onImpersonateUser: (user: User) => void;
   onUpdateUser: (email: string, updates: Partial<User>) => void;
+  onDeleteUser: (email: string) => void;
 }
 
-export default function MemberPool({ currentUser, users, onImpersonateUser, onUpdateUser }: MemberPoolProps) {
+export default function MemberPool({ currentUser, users, onImpersonateUser, onUpdateUser, onDeleteUser }: MemberPoolProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [editingPasswordEmail, setEditingPasswordEmail] = useState<string | null>(null);
   const [newPassword, setNewPassword] = useState('');
   const [passwordChangeSuccessEmail, setPasswordChangeSuccessEmail] = useState<string | null>(null);
+
+  // New state for name editing
+  const [editingNameEmail, setEditingNameEmail] = useState<string | null>(null);
+  const [tempName, setTempName] = useState('');
 
   // Group active members (not pending, not admin, not rejected)
   const activeUsers = users.filter(u => u.isApproved === true && u.email.toLowerCase() !== 'admin@g.g' && u.email.toLowerCase() !== 'wavoradashboard@gmail.com');
@@ -23,6 +28,16 @@ export default function MemberPool({ currentUser, users, onImpersonateUser, onUp
     user.artistName.toLowerCase().includes(searchTerm.toLowerCase()) || 
     user.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleUpdateName = (email: string) => {
+    if (!tempName.trim()) {
+      alert("Artist name cannot be empty.");
+      return;
+    }
+    onUpdateUser(email, { artistName: tempName.trim() });
+    setEditingNameEmail(null);
+    setTempName('');
+  };
 
   const handleAdminChangePassword = async (email: string) => {
     if (!newPassword.trim() || newPassword.length < 6) {
@@ -109,12 +124,48 @@ export default function MemberPool({ currentUser, users, onImpersonateUser, onUp
                   <tr key={user.email} className="hover:bg-indigo-950/5 group/row transition-all duration-300">
                     <td className="px-6 py-5">
                       <div className="flex items-center gap-3.5">
-                        <div className="w-10 h-10 rounded-xl flex flex-col items-center justify-center font-black text-xs text-white shadow-xl border border-white/10 bg-gradient-to-br from-[#6366F1] to-[#4338ca] group-hover/row:scale-110 transition-transform duration-300">
+                        <div className="w-10 h-10 rounded-xl flex flex-col items-center justify-center font-black text-xs text-white shadow-xl border border-white/10 bg-gradient-to-br from-[#10b981] to-[#059669] group-hover/row:scale-110 transition-transform duration-300">
                            {user.artistName.charAt(0).toUpperCase()}
                         </div>
-                        <div>
-                          <div className="font-extrabold text-slate-100 group-hover/row:text-white transition-colors text-sm">{user.artistName}</div>
-                          <div className="text-[10px] text-slate-450 font-mono mt-0.5">{user.email}</div>
+                        <div className="flex-1 min-w-0">
+                          {editingNameEmail === user.email ? (
+                            <div className="flex items-center gap-2">
+                              <input 
+                                type="text"
+                                value={tempName}
+                                onChange={(e) => setTempName(e.target.value)}
+                                className="bg-slate-900 border border-indigo-500/50 text-white text-xs rounded-lg px-2 py-1 w-32 focus:outline-none"
+                                autoFocus
+                              />
+                              <button 
+                                onClick={() => handleUpdateName(user.email)}
+                                className="p-1 text-emerald-400 hover:text-emerald-300 transition-colors"
+                              >
+                                <CheckCircle className="w-4 h-4" />
+                              </button>
+                              <button 
+                                onClick={() => setEditingNameEmail(null)}
+                                className="p-1 text-rose-400 hover:text-rose-300 transition-colors"
+                              >
+                                <XCircle className="w-4 h-4" />
+                              </button>
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-2">
+                              <div className="font-extrabold text-slate-100 group-hover/row:text-white transition-colors text-sm truncate">{user.artistName}</div>
+                              <button 
+                                onClick={() => {
+                                  setEditingNameEmail(user.email);
+                                  setTempName(user.artistName);
+                                }}
+                                className="p-1 text-slate-500 hover:text-indigo-400 opacity-0 group-hover/row:opacity-100 transition-all cursor-pointer"
+                                title="Edit Name"
+                              >
+                                <Edit2 className="w-3 h-3" />
+                              </button>
+                            </div>
+                          )}
+                          <div className="text-[10px] text-slate-450 font-mono mt-0.5 truncate">{user.email}</div>
                         </div>
                       </div>
                     </td>
@@ -129,7 +180,7 @@ export default function MemberPool({ currentUser, users, onImpersonateUser, onUp
                         onChange={(e) => handleUpdatePlan(user.email, e.target.value as Plan)}
                         className="bg-slate-900 border border-slate-800/80 text-slate-200 text-xs rounded-xl px-3 py-1.5 focus:outline-none focus:border-indigo-500 hover:border-slate-700 cursor-pointer font-bold transition-all"
                       >
-                        <option value="Basic">Basic</option>
+                        <option value="Free">Free</option>
                       </select>
                     </td>
                     <td className="px-6 py-5">
@@ -196,12 +247,21 @@ export default function MemberPool({ currentUser, users, onImpersonateUser, onUp
                       </div>
                     </td>
                     <td className="px-6 py-5 text-right">
-                      <button
-                        onClick={() => onImpersonateUser(user)}
-                        className="px-4 py-2 bg-gradient-to-r from-indigo-500 to-[#6366F1] hover:from-[#6366F1] hover:to-indigo-400 text-white font-extrabold rounded-xl text-[10px] uppercase tracking-wider cursor-pointer shadow-[0_4px_16px_rgba(99,102,241,0.25)] hover:shadow-[0_4px_22px_rgba(99,102,241,0.4)] hover:scale-[1.03] transition-all duration-300 inline-flex items-center gap-1.5"
-                      >
-                         Impersonate Artist
-                      </button>
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => onImpersonateUser(user)}
+                          className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-[#10b981] hover:from-[#10b981] hover:to-emerald-400 text-black font-extrabold rounded-xl text-[10px] uppercase tracking-wider cursor-pointer shadow-[0_4px_16px_rgba(16,185,129,0.25)] hover:shadow-[0_4px_22px_rgba(16,185,129,0.4)] hover:scale-[1.03] transition-all duration-300 inline-flex items-center gap-1.5"
+                        >
+                          Impersonate Artist
+                        </button>
+                        <button
+                          onClick={() => onDeleteUser(user.email)}
+                          className="p-2 bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white border border-rose-500/20 rounded-xl transition-all duration-200 cursor-pointer"
+                          title="Delete User Permanently"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))

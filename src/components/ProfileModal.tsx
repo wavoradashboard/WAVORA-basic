@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { X, KeyRound, FileText, Shield, User as UserIcon, Check } from 'lucide-react';
-import { User } from '../types';
+import { User, Plan } from '../types';
 
 interface ProfileModalProps {
   isOpen: boolean;
@@ -49,10 +49,10 @@ export default function ProfileModal({ isOpen, onClose, currentUser, onSavePassw
   };
 
   // Get plan badge styling
-  const getPlanBadge = (plan: 'Basic') => {
+  const getPlanBadge = (plan: Plan) => {
     return (
       <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black tracking-widest uppercase bg-[#1A1A1A] border border-[#2F2F2F] text-gray-300" id="badge_basic">
-        Basic Tier
+        Free Tier
       </span>
     );
   };

@@ -193,7 +193,7 @@ export default function App() {
             id: u.id,
             email: u.email,
             artistName: u.artist_name || u.email.split('@')[0],
-            plan: u.plan as Plan || 'Basic',
+            plan: u.plan as Plan || 'Free',
             isApproved: u.is_approved !== undefined ? u.is_approved : true,
             registeredAt: u.registered_at || new Date().toISOString(),
             planStartDate: u.plan_start_date ? u.plan_start_date.split('T')[0] : undefined,
@@ -218,7 +218,7 @@ export default function App() {
           id: userId,
           email: userEmail,
           artistName: currentUser?.artistName || userEmail.split('@')[0],
-          plan: currentUser?.plan || 'Basic',
+          plan: currentUser?.plan || 'Free',
           isApproved: currentUser?.isApproved !== undefined ? currentUser.isApproved : true,
           registeredAt: currentUser?.registeredAt || new Date().toISOString(),
           allowedCLines: currentUser?.allowedCLines || [],
@@ -366,7 +366,7 @@ export default function App() {
             id: u.id,
             email: u.email!,
             artistName: metadata.artistName || u.email!.split('@')[0],
-            plan: metadata.plan || 'Basic',
+            plan: metadata.plan || 'Free',
             isApproved: metadata.isApproved !== undefined ? metadata.isApproved : true,
             registeredAt: u.created_at || new Date().toISOString()
           };
@@ -571,11 +571,34 @@ export default function App() {
     try {
       await supabase.from('users').delete().eq('email', email);
     } catch (e) {
-      console.warn("Supabase user deletion failed, updating local state only:", e);
+      console.warn("Supabase user rejection failed, updating local state only:", e);
     }
     updateState((prev) => ({
       ...prev,
       users: prev.users.filter((u) => u.email !== email),
+    }));
+  };
+
+  const handleDeleteUser = async (email: string) => {
+    const confirmed = window.confirm(`Are you absolutely sure you want to permanently DELETE the user ${email}? This action cannot be undone.`);
+    if (!confirmed) return;
+
+    try {
+      // Delete from Supabase 'users' table
+      const { error } = await supabase.from('users').delete().eq('email', email);
+      if (error) {
+        console.error("Supabase user deletion error:", error);
+        alert(`Cloud deletion failed: ${error.message}`);
+      }
+    } catch (e) {
+      console.error("User deletion exception:", e);
+    }
+
+    // Update local state regardless of cloud success to keep UI snappy
+    updateState((prev) => ({
+      ...prev,
+      users: prev.users.filter((u) => u.email !== email),
+      // Also remove their releases, artists, etc. if required, but for now just users
     }));
   };
 
@@ -1533,6 +1556,7 @@ export default function App() {
             users={users}
             onImpersonateUser={handleImpersonateUser}
             onUpdateUser={handleUpdateUser}
+            onDeleteUser={handleDeleteUser}
           />
         );
         break;
@@ -1605,6 +1629,7 @@ export default function App() {
             onDownloadFile={handleDownloadFile}
             onUpdateArtist={handleUpdateArtist}
             onUpdateUser={handleUpdateUser}
+            onDeleteUser={handleDeleteUser}
             payoutRequests={appState.payoutRequests || []}
             onUpdatePayoutRequest={handleUpdatePayoutRequest}
           />

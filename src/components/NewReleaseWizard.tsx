@@ -141,7 +141,7 @@ export default function NewReleaseWizard({
     );
   }
 
-  const isBasic = true;
+  const isFree = true;
   const isPro = false;
   const isElite = false;
 
@@ -482,7 +482,7 @@ export default function NewReleaseWizard({
     const minAllowedDate = getMinReleaseDate();
     if (selectedDate < minAllowedDate) {
       const days = isElite ? '1 day' : isPro ? '3 days' : '5 days';
-      const tier = isElite ? 'Elite' : isPro ? 'Pro' : 'Basic';
+      const tier = isElite ? 'Elite' : isPro ? 'Pro' : 'Free';
       return `Release date must be at least ${days} from today for the ${tier} plan (Minimum allowed date: ${getMinReleaseDateString()})`;
     }
 
@@ -932,7 +932,7 @@ export default function NewReleaseWizard({
                     onChange={(e) => setReleaseDate(e.target.value)}
                   />
                   <p className="text-[9px] text-[#6366F1] font-semibold">
-                    Min. {isElite ? '1 day' : isPro ? '3 days' : '5 days'} from today ({isElite ? 'Elite' : isPro ? 'Pro' : 'Basic'} tier)
+                    Min. {isElite ? '1 day' : isPro ? '3 days' : '5 days'} from today ({isElite ? 'Elite' : isPro ? 'Pro' : 'Free'} tier)
                   </p>
                 </div>
 
@@ -953,7 +953,7 @@ export default function NewReleaseWizard({
               </div>
 
             {/* Pro and Elite C & P options */}
-            {!isBasic && (
+            {!isFree && (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                 <div className="space-y-1">
                   <div className="flex justify-between items-center">
@@ -1499,7 +1499,7 @@ export default function NewReleaseWizard({
                     <span className="text-indigo-400 font-medium">{selectedLabel || 'Prism Records (Elite)'}</span>
                   </div>
                 )}
-                {!isBasic && (
+                {!isFree && (
                   <div>
                     <span className="text-[10px] text-slate-500 uppercase block font-bold">Publishing Lines</span>
                     <span className="text-purple-400 font-mono text-[9px] block truncate">{cLine || '© Custom'}</span>

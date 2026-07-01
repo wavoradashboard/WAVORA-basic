@@ -5,7 +5,7 @@ CREATE TABLE public.users (
     id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
     email TEXT NOT NULL,
     artist_name TEXT NOT NULL,
-    plan TEXT NOT NULL DEFAULT 'Basic',
+    plan TEXT NOT NULL DEFAULT 'Free',
     is_approved BOOLEAN NOT NULL DEFAULT false,
     allowed_c_lines TEXT,
     allowed_p_lines TEXT,

@@ -42,7 +42,7 @@ export default function Sidebar({
   isSidebarCollapsed,
   setIsSidebarCollapsed
 }: SidebarProps) {
-  const isBasic = true;
+  const isFree = true;
   const isPro = false;
   const isElite = false;
   const isAdmin = currentUser.email === 'admin@g.g';
@@ -75,7 +75,7 @@ export default function Sidebar({
     }
     return (
       <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[rgba(255,255,255,0.1)] text-gray-300 border border-[#2F2F2F] tracking-wide uppercase">
-        🎵 Basic Tier
+        🎵 Free Tier
       </span>
     );
   };
@@ -179,17 +179,16 @@ export default function Sidebar({
         </div>
       )}
 
-      {/* Desktop Sidebar Container (Completely Hidden on Mobile devices) */}
       <aside 
-        className={`hidden ${isSidebarCollapsed ? '' : 'lg:flex'} lg:sticky lg:top-4 lg:z-10 w-64 bg-[#070710] border border-white/10 rounded-[2rem] flex-col justify-between h-[calc(100vh-2rem)] flex-shrink-0 lg:ml-4 shadow-2xl shadow-indigo-500/10 overflow-hidden`}
+        className={`hidden ${isSidebarCollapsed ? '' : 'lg:flex'} w-64 bg-[#070710] border border-white/10 rounded-[2rem] flex-col justify-between h-[calc(100vh-2rem)] flex-shrink-0 lg:ml-4 lg:my-4 shadow-2xl shadow-indigo-500/10 overflow-hidden`}
         id="app_sidebar"
       >
-        <div className="flex-1 flex flex-col">
+        <div className="flex-1 flex flex-col min-h-0">
           {/* Header Brand */}
-          <div className="hidden lg:flex items-center justify-between px-6 py-5 border-b border-white/10" id="sidebar_header_wrapper">
+          <div className="hidden lg:flex items-center justify-between px-6 py-5 border-b border-white/10 flex-shrink-0" id="sidebar_header_wrapper">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 bg-[#6366F1] rounded-full flex items-center justify-center">
-                <div className="w-1.5 h-4 bg-black"></div>
+                {/* Removed vertical bar that looked like an 'i' icon */}
               </div>
               <div className="text-left">
                 <span className="text-lg font-black tracking-tighter uppercase text-white">Wavora <span className="text-[#6366F1]">Live</span></span>
@@ -208,7 +207,7 @@ export default function Sidebar({
           </div>
 
           {/* User profile capsule in sidebar */}
-          <div className="px-6 py-4 border-b border-white/10 bg-white/5 text-left">
+          <div className="px-6 py-4 border-b border-white/10 bg-white/5 text-left flex-shrink-0">
             <div className="text-[9px] text-gray-500 font-bold uppercase tracking-widest mb-1">Active Identity</div>
             <div className="font-bold text-sm text-white truncate">{currentUser.artistName}</div>
             <div className="text-xs text-gray-400 truncate mt-0.5">{currentUser.email}</div>
@@ -217,7 +216,7 @@ export default function Sidebar({
 
           {/* Impersonation alert */}
           {isImpersonating && (
-            <div className="mx-4 my-3 p-3 rounded-xl bg-orange-950/40 border border-orange-500/20 text-xs text-left">
+            <div className="mx-4 my-3 p-3 rounded-xl bg-orange-950/40 border border-orange-500/20 text-xs text-left flex-shrink-0">
               <div className="font-bold text-orange-400 flex items-center gap-1">
                 <Sparkles className="w-3.5 h-3.5 animate-pulse" /> Impersonation Active
               </div>

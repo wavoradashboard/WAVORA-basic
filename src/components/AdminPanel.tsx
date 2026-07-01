@@ -54,6 +54,7 @@ interface AdminPanelProps {
   onDownloadFile: (path: string) => void;
   onUpdateArtist: (id: string, updates: Partial<ArtistProfile>) => void;
   onUpdateUser: (email: string, updates: Partial<User>) => void;
+  onDeleteUser: (email: string) => void;
   payoutRequests?: PayoutRequest[];
   onUpdatePayoutRequest: (id: string, status: 'Approved' | 'Rejected', feedback?: string) => void;
 }
@@ -173,6 +174,7 @@ export default function AdminPanel({
   onDownloadFile,
   onUpdateArtist,
   onUpdateUser,
+  onDeleteUser,
   payoutRequests = [],
   onUpdatePayoutRequest
 }: AdminPanelProps) {
@@ -184,7 +186,7 @@ export default function AdminPanel({
   const [createArtistName, setCreateArtistName] = useState('');
   const [createEmail, setCreateEmail] = useState('');
   const [createPassword, setCreatePassword] = useState('');
-  const [createPlan, setCreatePlan] = useState<Plan>('Basic');
+  const [createPlan, setCreatePlan] = useState<Plan>('Free');
   const [createSuccess, setCreateSuccess] = useState('');
   const [createError, setCreateError] = useState('');
   const [createLoading, setCreateLoading] = useState(false);
@@ -343,7 +345,7 @@ export default function AdminPanel({
         setCreateArtistName('');
         setCreateEmail('');
         setCreatePassword('');
-        setCreatePlan('Basic');
+        setCreatePlan('Free');
       } else {
         setCreateError(res.message);
       }
@@ -735,7 +737,7 @@ export default function AdminPanel({
                     onChange={(e) => setCreatePlan(e.target.value as Plan)}
                     id="admin_create_user_plan"
                   >
-                    <option value="Basic">Basic Tier</option>
+                    <option value="Free">Free Tier</option>
                   </select>
                 </div>
 
@@ -1337,7 +1339,7 @@ export default function AdminPanel({
                       required
                     >
                       <option value="">-- Choose Plan --</option>
-                      <option value="Basic">Basic Tier</option>
+                      <option value="Free">Free Tier</option>
                     </select>
                   </div>
                 )}
