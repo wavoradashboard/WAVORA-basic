@@ -135,7 +135,13 @@ DROP POLICY IF EXISTS "Enable read for authenticated users" ON public.users;
 CREATE POLICY "Enable read for authenticated users" ON public.users FOR SELECT TO authenticated USING (true);
 
 DROP POLICY IF EXISTS "Enable update for users based on email" ON public.users;
-CREATE POLICY "Enable update for users based on email" ON public.users FOR UPDATE TO authenticated USING (auth.uid() = id);
+CREATE POLICY "Enable update for users based on email" ON public.users FOR UPDATE TO authenticated USING (auth.uid() = id OR is_admin());
+
+DROP POLICY IF EXISTS "Enable insert for users" ON public.users;
+CREATE POLICY "Enable insert for users" ON public.users FOR INSERT TO authenticated WITH CHECK (auth.uid() = id OR is_admin());
+
+DROP POLICY IF EXISTS "Enable delete for admin" ON public.users;
+CREATE POLICY "Enable delete for admin" ON public.users FOR DELETE TO authenticated USING (is_admin());
 
 DROP POLICY IF EXISTS "Enable CRUD for users based on user_id" ON public.releases;
 CREATE POLICY "Enable CRUD for users based on user_id" ON public.releases FOR ALL TO authenticated USING (auth.uid() = user_id OR is_admin());

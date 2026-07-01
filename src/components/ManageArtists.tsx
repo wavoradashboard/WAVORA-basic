@@ -30,7 +30,7 @@ export default function ManageArtists({
   const [instagramLink, setInstagramLink] = useState('');
   const [formError, setFormError] = useState('');
 
-  const isAdmin = currentUser.email === 'admin@g.g';
+  const isAdmin = currentUser.email === 'admin@g.g' || currentUser.email === 'wavoradashboard@gmail.com';
 
   // Default artist name to profile name if no artists added yet
   React.useEffect(() => {

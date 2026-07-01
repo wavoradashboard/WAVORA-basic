@@ -228,7 +228,7 @@ export default function App() {
 
       setAppState((prev) => ({
         ...prev,
-        users: uniqueUsers.length > 0 ? uniqueUsers : prev.users,
+        users: usersData ? uniqueUsers : prev.users,
         releases: releasesData 
           ? releasesData.map((r: any) => ({
               id: r.id,
@@ -423,11 +423,19 @@ export default function App() {
             // Resolve Supabase user ID and load database asynchronously if they are saved locally
             try {
               const { data: matchedUser } = await supabase.from('users').select('id').eq('email', freshUser.email).single();
-              if (matchedUser?.id) {
-                await loadSupabaseData(freshUser.email, matchedUser.id);
+              const userIdToUse = matchedUser?.id || freshUser.id;
+              if (userIdToUse) {
+                await loadSupabaseData(freshUser.email, userIdToUse);
               }
             } catch (supErr) {
-              console.warn("Could not load matching Supabase row on mount fallback:", supErr);
+              console.warn("Could not load matching Supabase row on mount fallback, trying direct load:", supErr);
+              if (freshUser.id) {
+                try {
+                  await loadSupabaseData(freshUser.email, freshUser.id);
+                } catch (err) {
+                  console.warn("Fallback direct load failed:", err);
+                }
+              }
             }
           }
         }
@@ -503,13 +511,10 @@ export default function App() {
       setCurrentTab('home');
     }
 
-    // Load active Supabase data for the logged-in user in the background
+    // Load active Supabase data for the logged-in user directly using the Auth ID
     const loadDbOnLogin = async () => {
       try {
-        const { data: matchedUser } = await supabase.from('users').select('id').eq('email', user.email).single();
-        if (matchedUser?.id) {
-          await loadSupabaseData(user.email, matchedUser.id);
-        }
+        await loadSupabaseData(user.email, user.id);
       } catch (e) {
         console.warn("Could not load fresh Supabase state on login:", e);
       }
@@ -530,7 +535,7 @@ export default function App() {
     // Register details on Supabase
     const pushSignupRow = async () => {
       try {
-        await supabase.from('users').insert({
+        const { error: dbErr } = await supabase.from('users').insert({
           id: newUser.id || crypto.randomUUID(),
           email: newUser.email,
           artist_name: newUser.artistName,
@@ -538,6 +543,9 @@ export default function App() {
           is_approved: newUser.isApproved !== undefined ? newUser.isApproved : true,
           registered_at: newUser.registeredAt || new Date().toISOString()
         });
+        if (dbErr) {
+          console.error("Database user insert rejected (Row Level Security / Schema error):", dbErr);
+        }
       } catch (e) {
         console.warn("Could not insert signup row to Supabase:", e);
       }
@@ -638,7 +646,7 @@ export default function App() {
       // but to be safe, we insert explicitly here for the mock.
       const finalUserId = signedUpUser?.user?.id || crypto.randomUUID();
       try {
-        await supabase.from('users').insert({
+        const { error: dbError } = await supabase.from('users').insert({
           id: finalUserId,
           email: newUser.email,
           artist_name: newUser.artistName,
@@ -646,8 +654,11 @@ export default function App() {
           is_approved: true,
           registered_at: newUser.registeredAt || new Date().toISOString()
         });
-      } catch (dbError) {
-        console.warn("Database user insert rejected, proceeding mock/offline:", dbError);
+        if (dbError) {
+          console.error("Database user insert rejected (Row Level Security / Schema error):", dbError);
+        }
+      } catch (e) {
+        console.warn("Database user insert failed to execute:", e);
       }
 
       const userWithId: User = {
@@ -659,6 +670,13 @@ export default function App() {
         ...prev,
         users: [...prev.users, userWithId],
       }));
+
+      // Background refresh of Supabase data to verify synchronization
+      if (currentUser) {
+        loadSupabaseData(currentUser.email, currentUser.id).catch(err => 
+          console.warn("Could not reload database state after user creation:", err)
+        );
+      }
 
       return { success: true, message: 'User account created and pre-approved!' };
     } catch (err: any) {

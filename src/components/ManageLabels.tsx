@@ -24,7 +24,7 @@ export default function ManageLabels({
   const [targetUserEmail, setTargetUserEmail] = useState(currentUser.email);
   const [error, setError] = useState('');
   
-  const isAdmin = currentUser.email === 'admin@g.g';
+  const isAdmin = currentUser.email === 'admin@g.g' || currentUser.email === 'wavoradashboard@gmail.com';
   
   // Show all labels globally if true Admin. 
   // If impersonating or normal user: Show Global labels (admin@g.g) + their Private labels (currentUser.email)
