@@ -253,6 +253,7 @@ export default function CatalogueView({
                                   </div>
                                   <p className="text-[10px] text-gray-400">
                                     Producer: <span className="text-slate-200">{track.producer}</span> • Composer: <span className="text-slate-200">{track.composer}</span> • Lyricist: <span className="text-slate-200">{track.lyricist}</span>
+                                    {track.crtbCut && <> • CRTB Cut: <span className="text-slate-200">{track.crtbCut}</span></>}
                                   </p>
                                 </div>
 

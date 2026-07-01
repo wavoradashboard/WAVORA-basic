@@ -74,7 +74,7 @@ CREATE TABLE public.releases (
     p_line TEXT,
     release_date TEXT NOT NULL,
     cover_art_url TEXT NOT NULL,
-    tracks JSONB NOT NULL,
+    tracks JSONB NOT NULL, -- Array of Track objects: id, trackName, mainArtistName, featureArtists, otherArtists, genre, subGenre, language, producer, lyricist, composer, isrc, explicitContent, contentId, lyrics, googleDriveLink, crtbCut
     special_request TEXT,
     status TEXT NOT NULL DEFAULT 'Submitted',
     submitted_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),

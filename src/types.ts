@@ -56,6 +56,7 @@ export interface ReleaseTrack {
   lyrics?: string;
   audioFileName?: string;
   googleDriveLink?: string;
+  crtbCut?: string;
 }
 
 export interface Release {

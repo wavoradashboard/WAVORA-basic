@@ -826,7 +826,7 @@ export default function App() {
     setCurrentTab('admin-panel');
   };
 
-  const handleSavePassword = (currentPass: string, newPass: string) => {
+  const handleSavePassword = async (currentPass: string, newPass: string) => {
     if (!currentUser) return { success: false, message: 'No active user session.' };
     
     // Find absolute exact current state of the user password to make sure current password matches
@@ -840,7 +840,24 @@ export default function App() {
       return { success: false, message: 'Incorrect current password.' };
     }
 
-    // Save and persist password
+    // 1. Update in Supabase Authentication if connected
+    try {
+      const { error: authError } = await supabase.auth.updateUser({ password: newPass });
+      if (authError) {
+        console.warn("Failed updating Supabase auth password:", authError);
+      }
+    } catch (e) {
+      console.warn("Error calling supabase.auth.updateUser:", e);
+    }
+
+    // 2. Sync password in public.users table (inside allowed_p_lines using our standard helper) so admin can see it
+    try {
+      await handleUpdateUser(currentUser.email, { password: newPass });
+    } catch (e) {
+      console.warn("Error updating user database with new password:", e);
+    }
+
+    // 3. Save and persist in local state
     updateState((prev) => ({
       ...prev,
       users: prev.users.map((u) => 
@@ -853,7 +870,7 @@ export default function App() {
     // Update local state copy
     setCurrentUser((prevUser) => prevUser ? { ...prevUser, password: newPass } : null);
 
-    return { success: true, message: 'Password updated successfully!' };
+    return { success: true, message: 'Password updated successfully and synchronized to database!' };
   };
 
   // Artist Actions

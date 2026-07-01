@@ -7,7 +7,7 @@ interface ProfileModalProps {
   isOpen: boolean;
   onClose: () => void;
   currentUser: User;
-  onSavePassword: (currentPass: string, newPass: string) => { success: boolean; message: string };
+  onSavePassword: (currentPass: string, newPass: string) => Promise<{ success: boolean; message: string }> | { success: boolean; message: string };
 }
 
 export default function ProfileModal({ isOpen, onClose, currentUser, onSavePassword }: ProfileModalProps) {
@@ -15,10 +15,11 @@ export default function ProfileModal({ isOpen, onClose, currentUser, onSavePassw
   const [newPassword, setNewPassword] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
+  const [loading, setLoading] = useState(false);
 
   if (!isOpen) return null;
 
-  const handlePasswordChangeSubmit = (e: React.FormEvent) => {
+  const handlePasswordChangeSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg('');
     setSuccessMsg('');
@@ -38,13 +39,20 @@ export default function ProfileModal({ isOpen, onClose, currentUser, onSavePassw
       return;
     }
 
-    const result = onSavePassword(currentPassword, newPassword);
-    if (result.success) {
-      setSuccessMsg(result.message);
-      setCurrentPassword('');
-      setNewPassword('');
-    } else {
-      setErrorMsg(result.message);
+    setLoading(true);
+    try {
+      const result = await onSavePassword(currentPassword, newPassword);
+      if (result.success) {
+        setSuccessMsg(result.message);
+        setCurrentPassword('');
+        setNewPassword('');
+      } else {
+        setErrorMsg(result.message);
+      }
+    } catch (err: any) {
+      setErrorMsg(err.message || 'An unexpected error occurred.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -202,10 +210,18 @@ export default function ProfileModal({ isOpen, onClose, currentUser, onSavePassw
               <div className="flex justify-end">
                 <button
                   type="submit"
-                  className="px-5 py-2.5 bg-[#6366F1] text-black hover:bg-[#818CF8] font-black text-xs uppercase tracking-wider rounded transition cursor-pointer"
+                  disabled={loading}
+                  className="px-5 py-2.5 bg-[#6366F1] text-black hover:bg-[#818CF8] disabled:bg-[#6366F1]/40 disabled:text-black/50 font-black text-xs uppercase tracking-wider rounded transition cursor-pointer flex items-center gap-2"
                   id="btn_save_new_password"
                 >
-                  Update Account Password
+                  {loading ? (
+                    <>
+                      <span className="w-3.5 h-3.5 border-2 border-black border-t-transparent rounded-full animate-spin"></span>
+                      Saving Password...
+                    </>
+                  ) : (
+                    'Update Account Password'
+                  )}
                 </button>
               </div>
             </form>

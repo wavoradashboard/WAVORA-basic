@@ -173,7 +173,7 @@ export default function NewReleaseWizard({
   const getMinReleaseDate = (): Date => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const daysToAdd = isElite ? 1 : isPro ? 3 : 5;
+    const daysToAdd = isElite ? 1 : isPro ? 3 : 7;
     const minDate = new Date(today);
     minDate.setDate(today.getDate() + daysToAdd);
     return minDate;
@@ -267,6 +267,7 @@ export default function NewReleaseWizard({
             contentId: 'No',
             lyrics: '',
             googleDriveLink: '',
+            crtbCut: '',
           });
         }
       } else if (updated.length > numTracks) {
@@ -481,7 +482,7 @@ export default function NewReleaseWizard({
     const selectedDate = new Date(releaseDate + 'T00:00:00');
     const minAllowedDate = getMinReleaseDate();
     if (selectedDate < minAllowedDate) {
-      const days = isElite ? '1 day' : isPro ? '3 days' : '5 days';
+      const days = isElite ? '1 day' : isPro ? '3 days' : '7 days';
       const tier = isElite ? 'Elite' : isPro ? 'Pro' : 'Free';
       return `Release date must be at least ${days} from today for the ${tier} plan (Minimum allowed date: ${getMinReleaseDateString()})`;
     }
@@ -505,6 +506,7 @@ export default function NewReleaseWizard({
       if (!t.lyricist.trim()) return `Lyricist metadata is required for Track #${i + 1}`;
       if (!t.genre) return `Main Genre is required for Track #${i + 1}`;
       if (!t.subGenre) return `Sub-Genre is required for Track #${i + 1}`;
+      if (!t.crtbCut?.trim()) return `CRTB Cut (Vocals Start Timestamp) is required for Track #${i + 1} (it is critical for digital platforms)`;
     }
     return '';
   };
@@ -932,7 +934,7 @@ export default function NewReleaseWizard({
                     onChange={(e) => setReleaseDate(e.target.value)}
                   />
                   <p className="text-[9px] text-[#6366F1] font-semibold">
-                    Min. {isElite ? '1 day' : isPro ? '3 days' : '5 days'} from today ({isElite ? 'Elite' : isPro ? 'Pro' : 'Free'} tier)
+                    Min. {isElite ? '1 day' : isPro ? '3 days' : '7 days'} from today ({isElite ? 'Elite' : isPro ? 'Pro' : 'Free'} tier)
                   </p>
                 </div>
 
@@ -1262,6 +1264,29 @@ export default function NewReleaseWizard({
                         id={`w_track_${idx}_isrc`}
                       />
                     </div>
+
+                    <div className="space-y-1 p-3 bg-indigo-950/20 rounded-xl border border-indigo-500/20 shadow-inner">
+                      <div className="flex justify-between items-center">
+                        <label className="block text-[10px] font-bold text-indigo-300 uppercase tracking-widest flex items-center gap-1">
+                          <span>CRTB Cut (Vocals Start)</span>
+                          <span className="text-red-500 font-bold">*</span>
+                        </label>
+                        <span className="text-[8px] bg-red-950/60 text-red-400 font-bold px-1.5 py-0.5 rounded border border-red-900/40 uppercase tracking-tighter">
+                          Required
+                        </span>
+                      </div>
+                      <p className="text-[9px] text-indigo-400/80 leading-tight">
+                        Critical metadata used by platforms (TikTok, Reels, DSPs) to accurately align audio sync and starting previews.
+                      </p>
+                      <input
+                        type="text"
+                        className="w-full bg-[#0a0d1a] border border-indigo-900/50 rounded-xl py-1.5 px-3 text-xs text-indigo-100 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 font-mono"
+                        placeholder="e.g. 0:30 or 1:15"
+                        value={track.crtbCut || ''}
+                        onChange={(e) => handleTrackFieldChange(idx, 'crtbCut', e.target.value)}
+                        id={`w_track_${idx}_crtb_cut`}
+                      />
+                    </div>
                   </div>
 
                   {/* Explicit Tag check */}
@@ -1520,7 +1545,10 @@ export default function NewReleaseWizard({
                             {( (t.featureArtists && t.featureArtists.length > 0) || (t.otherArtists && t.otherArtists.length > 0) ) && 
                               ` (feat. ${[...(t.featureArtists || []), ...(t.otherArtists || [])].join(', ')})`}
                         </div>
-                        <div className="text-[10px] text-slate-500 font-semibold uppercase mt-1">Producer: {t.producer || 'N/A'} • Composer: {t.composer || 'N/A'}</div>
+                        <div className="text-[10px] text-slate-500 font-semibold uppercase mt-1">
+                          Producer: {t.producer || 'N/A'} • Composer: {t.composer || 'N/A'}
+                          {t.crtbCut && ` • CRTB Cut: ${t.crtbCut}`}
+                        </div>
                       </div>
                       <div className="sm:text-right">
                         <span className="text-[10px] bg-slate-800 text-blue-400 font-mono px-2 py-0.5 rounded border border-slate-700 inline-block sm:block text-center min-w-[120px]">

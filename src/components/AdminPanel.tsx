@@ -281,8 +281,8 @@ export default function AdminPanel({
     console.log(`${label} copied to clipboard`);
   };
 
-  const pendingUsers = users.filter(u => !u.isApproved && u.email !== 'admin@g.g');
-  const activeUsers = users.filter(u => u.isApproved && u.email !== 'admin@g.g');
+  const pendingUsers = users.filter(u => !u.isApproved);
+  const activeUsers = users.filter(u => u.isApproved);
   
   const submittedReleases = releases.filter(r => r.status === 'Submitted');
   const approvedReleases = releases.filter(r => r.status === 'Approved');
@@ -488,6 +488,9 @@ export default function AdminPanel({
                     <div className="space-y-0.5">
                       <span className="block text-slate-400"><span className="text-[9px] text-slate-500 uppercase">Prod:</span> {track.producer || 'N/A'}</span>
                       <span className="block text-slate-400"><span className="text-[9px] text-slate-500 uppercase">Comp:</span> {track.composer || 'N/A'}</span>
+                      {track.crtbCut && (
+                        <span className="block text-slate-400"><span className="text-[9px] text-slate-500 uppercase">CRTB:</span> {track.crtbCut}</span>
+                      )}
                     </div>
                   </td>
                   <td className="py-3.5 px-3 font-mono text-slate-300">
@@ -2085,6 +2088,19 @@ export default function AdminPanel({
                                 )}
                               </div>
                             </>
+                          )}
+                        </div>
+
+                        <div className="p-2.5 bg-[#090909] rounded border border-white/10 space-y-0.5 text-left relative group">
+                          <span className="text-[8px] text-gray-500 uppercase font-extrabold block">CRTB Cut (Vocals Start)</span>
+                          <span className="text-white font-semibold text-[11px]">{track.crtbCut || 'Not Specified'}</span>
+                          {track.crtbCut && (
+                            <button 
+                              onClick={() => handleCopy(track.crtbCut!, 'CRTB Cut')}
+                              className="absolute top-2 right-2 p-0.5 hover:text-[#6366F1] text-gray-500 opacity-0 group-hover:opacity-100 transition cursor-pointer"
+                            >
+                              <Copy className="w-2.5 h-2.5" />
+                            </button>
                           )}
                         </div>
 

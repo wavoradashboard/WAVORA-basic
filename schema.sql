@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS public.releases (
   p_line text,
   release_date text,
   cover_art_url text,
-  tracks jsonb DEFAULT '[]'::jsonb,
+  tracks jsonb DEFAULT '[]'::jsonb, -- Array of Track objects: id, trackName, mainArtistName, featureArtists, otherArtists, genre, subGenre, language, producer, lyricist, composer, isrc, explicitContent, contentId, lyrics, googleDriveLink, crtbCut
   special_request text,
   status text DEFAULT 'Submitted',
   feedback text,
