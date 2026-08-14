@@ -190,3 +190,41 @@ ALTER TABLE public.payout_requests ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "Enable CRUD for users based on user_id" ON public.payout_requests;
 CREATE POLICY "Enable CRUD for users based on user_id" ON public.payout_requests FOR ALL TO authenticated USING (auth.uid() = user_id OR is_admin());
+
+-- 10. AUTOMATIC USER SYNC FROM AUTH TO PUBLIC
+-- Trigger function to automatically create a profile in public.users when a user signs up on Supabase Auth
+CREATE OR REPLACE FUNCTION public.handle_new_auth_user()
+RETURNS trigger AS $$
+BEGIN
+  INSERT INTO public.users (id, email, artist_name, plan, is_approved, registered_at)
+  VALUES (
+    new.id,
+    new.email,
+    COALESCE(new.raw_user_meta_data->>'artist_name', new.raw_user_meta_data->>'name', 'New Artist'),
+    COALESCE(new.raw_user_meta_data->>'plan', 'Free'),
+    false,
+    COALESCE(new.created_at, now())
+  )
+  ON CONFLICT (id) DO NOTHING;
+  RETURN new;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Trigger to execute the function on any new auth.users insertion
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION public.handle_new_auth_user();
+
+-- Backfill query to sync any existing users currently in auth.users but missing in public.users
+INSERT INTO public.users (id, email, artist_name, plan, is_approved, registered_at)
+SELECT 
+  id, 
+  email, 
+  COALESCE(raw_user_meta_data->>'artist_name', raw_user_meta_data->>'name', 'New Artist'), 
+  COALESCE(raw_user_meta_data->>'plan', 'Free'), 
+  false, 
+  COALESCE(created_at, now())
+FROM auth.users
+ON CONFLICT (id) DO NOTHING;
+

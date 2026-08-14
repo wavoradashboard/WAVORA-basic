@@ -226,115 +226,119 @@ export default function App() {
         });
       }
 
-      setAppState((prev) => ({
-        ...prev,
-        users: usersData ? uniqueUsers : prev.users,
-        releases: releasesData 
-          ? releasesData.map((r: any) => ({
-              id: r.id,
-              email: r.email,
-              albumName: r.album_name,
-              mainArtistName: r.main_artist_name,
-              featureArtists: Array.isArray(r.feature_artists) ? r.feature_artists : [],
-              otherArtists: Array.isArray(r.other_artists) ? r.other_artists : [],
-              language: r.language || 'English',
-              contentType: r.content_type || 'Original',
-              numTracks: r.num_tracks || 0,
-              genre: r.genre || '',
-              subGenre: r.sub_genre || '',
-              labelName: r.label_name || '',
-              upc: r.upc || '',
-              contentId: r.content_id || 'No',
-              cLine: r.c_line || '',
-              pLine: r.p_line || '',
-              releaseDate: r.release_date || '',
-              coverArtUrl: r.cover_art_url || '',
-              coverArtSignedUrl: (r.cover_art_url && !r.cover_art_url.startsWith('http')) ? signedUrlMap[r.cover_art_url] : undefined,
-              submittedAt: r.submitted_at || new Date().toISOString(),
-              status: r.status as TrackStatus || 'Submitted',
-              tracks: Array.isArray(r.tracks) ? r.tracks : [],
-              specialRequest: r.special_request || '',
-              feedback: r.feedback || '',
-            }))
-          : prev.releases,
-        artists: artistsData
-          ? artistsData.map((a: any) => ({
-              id: a.id,
-              email: a.email,
-              name: a.name,
-              spotifyLink: a.spotify_link || '',
-              appleMusicLink: a.apple_music_link || '',
-              instagramLink: a.instagram_link || '',
-              defaultCLine: a.default_c_line || '',
-              defaultPLine: a.default_p_line || ''
-            }))
-          : prev.artists,
-        labels: labelsData
-          ? labelsData.map((l: any) => ({
-              id: l.id,
-              email: l.email,
-              name: l.name
-            }))
-          : prev.labels,
-        revenueReports: revenueData
-          ? revenueData.map((r: any) => ({
-              id: r.id,
-              email: r.email,
-              month: r.month,
-              amount: typeof r.amount === 'string' ? parseFloat(r.amount) : r.amount,
-              breakdown: Array.isArray(r.breakdown) ? r.breakdown : [],
-              currency: r.currency || 'USD'
-            }))
-          : prev.revenueReports,
-        queries: queriesData
-          ? queriesData.map((q: any) => ({
-              id: q.id,
-              email: q.email,
-              artistName: q.artist_name || '',
-              queryText: q.query_text,
-              status: q.status || 'Pending',
-              replyText: q.reply_text || '',
-              submittedAt: q.submitted_at || new Date().toISOString()
-            }))
-          : prev.queries,
-        oacApplications: oacData
-          ? oacData.map((o: any) => ({
-              id: o.id,
-              email: o.email,
-              artistName: o.artist_name || '',
-              spotifyLink: o.spotify_link || '',
-              youtubeLink: o.youtube_link || '',
-              fullName: o.full_name || '',
-              submittedAt: o.submitted_at || new Date().toISOString(),
-              status: o.status || 'Pending'
-            }))
-          : prev.oacApplications,
-        notifications: notifData
-          ? notifData.map((n: any) => ({
-              id: n.id,
-              title: n.title,
-              message: n.message,
-              targetType: n.target_type as any,
-              targetValue: n.target_value || '',
-              severity: n.severity as any,
-              createdAt: n.created_at || new Date().toISOString()
-            }))
-          : prev.notifications,
-        payoutRequests: payoutsData
-          ? payoutsData.map((p: any) => ({
-              id: p.id,
-              email: p.email,
-              artistName: p.artist_name || '',
-              amount: typeof p.amount === 'string' ? parseFloat(p.amount) : p.amount,
-              currency: p.currency || 'USD',
-              paymentMethod: p.payment_method || 'UPI',
-              paymentDetails: typeof p.payment_details === 'object' ? p.payment_details : {},
-              submittedAt: p.submitted_at || new Date().toISOString(),
-              status: p.status || 'Pending',
-              feedback: p.feedback || ''
-            }))
-          : prev.payoutRequests
-      }));
+      setAppState((prev) => {
+        const next = {
+          ...prev,
+          users: usersData ? uniqueUsers : prev.users,
+          releases: releasesData 
+            ? releasesData.map((r: any) => ({
+                id: r.id,
+                email: r.email,
+                albumName: r.album_name,
+                mainArtistName: r.main_artist_name,
+                featureArtists: Array.isArray(r.feature_artists) ? r.feature_artists : [],
+                otherArtists: Array.isArray(r.other_artists) ? r.other_artists : [],
+                language: r.language || 'English',
+                contentType: r.content_type || 'Original',
+                numTracks: r.num_tracks || 0,
+                genre: r.genre || '',
+                subGenre: r.sub_genre || '',
+                labelName: r.label_name || '',
+                upc: r.upc || '',
+                contentId: r.content_id || 'No',
+                cLine: r.c_line || '',
+                pLine: r.p_line || '',
+                releaseDate: r.release_date || '',
+                coverArtUrl: r.cover_art_url || '',
+                coverArtSignedUrl: (r.cover_art_url && !r.cover_art_url.startsWith('http')) ? signedUrlMap[r.cover_art_url] : undefined,
+                submittedAt: r.submitted_at || new Date().toISOString(),
+                status: r.status as TrackStatus || 'Submitted',
+                tracks: Array.isArray(r.tracks) ? r.tracks : [],
+                specialRequest: r.special_request || '',
+                feedback: r.feedback || '',
+              }))
+            : prev.releases,
+          artists: artistsData
+            ? artistsData.map((a: any) => ({
+                id: a.id,
+                email: a.email,
+                name: a.name,
+                spotifyLink: a.spotify_link || '',
+                appleMusicLink: a.apple_music_link || '',
+                instagramLink: a.instagram_link || '',
+                defaultCLine: a.default_c_line || '',
+                defaultPLine: a.default_p_line || ''
+              }))
+            : prev.artists,
+          labels: labelsData
+            ? labelsData.map((l: any) => ({
+                id: l.id,
+                email: l.email,
+                name: l.name
+              }))
+            : prev.labels,
+          revenueReports: revenueData
+            ? revenueData.map((r: any) => ({
+                id: r.id,
+                email: r.email,
+                month: r.month,
+                amount: typeof r.amount === 'string' ? parseFloat(r.amount) : r.amount,
+                breakdown: Array.isArray(r.breakdown) ? r.breakdown : [],
+                currency: r.currency || 'USD'
+              }))
+            : prev.revenueReports,
+          queries: queriesData
+            ? queriesData.map((q: any) => ({
+                id: q.id,
+                email: q.email,
+                artistName: q.artist_name || '',
+                queryText: q.query_text,
+                status: q.status || 'Pending',
+                replyText: q.reply_text || '',
+                submittedAt: q.submitted_at || new Date().toISOString()
+              }))
+            : prev.queries,
+          oacApplications: oacData
+            ? oacData.map((o: any) => ({
+                id: o.id,
+                email: o.email,
+                artistName: o.artist_name || '',
+                spotifyLink: o.spotify_link || '',
+                youtubeLink: o.youtube_link || '',
+                fullName: o.full_name || '',
+                submittedAt: o.submitted_at || new Date().toISOString(),
+                status: o.status || 'Pending'
+              }))
+            : prev.oacApplications,
+          notifications: notifData
+            ? notifData.map((n: any) => ({
+                id: n.id,
+                title: n.title,
+                message: n.message,
+                targetType: n.target_type as any,
+                targetValue: n.target_value || '',
+                severity: n.severity as any,
+                createdAt: n.created_at || new Date().toISOString()
+              }))
+            : prev.notifications,
+          payoutRequests: payoutsData
+            ? payoutsData.map((p: any) => ({
+                id: p.id,
+                email: p.email,
+                artistName: p.artist_name || '',
+                amount: typeof p.amount === 'string' ? parseFloat(p.amount) : p.amount,
+                currency: p.currency || 'USD',
+                paymentMethod: p.payment_method || 'UPI',
+                paymentDetails: typeof p.payment_details === 'object' ? p.payment_details : {},
+                submittedAt: p.submitted_at || new Date().toISOString(),
+                status: p.status || 'Pending',
+                feedback: p.feedback || ''
+              }))
+            : prev.payoutRequests
+        };
+        saveStoredData(next);
+        return next;
+      });
 
       // Set active currentUser reference from DB user sync
       const matchEmail = (isImpersonating && currentUser) ? currentUser.email.toLowerCase() : userEmail.toLowerCase();
@@ -532,25 +536,7 @@ export default function App() {
     localStorage.setItem('wavora_current_user', JSON.stringify(newUser));
     setCurrentTab('home');
 
-    // Register details on Supabase
-    const pushSignupRow = async () => {
-      try {
-        const { error: dbErr } = await supabase.from('users').insert({
-          id: newUser.id || crypto.randomUUID(),
-          email: newUser.email,
-          artist_name: newUser.artistName,
-          plan: newUser.plan,
-          is_approved: newUser.isApproved !== undefined ? newUser.isApproved : true,
-          registered_at: newUser.registeredAt || new Date().toISOString()
-        });
-        if (dbErr) {
-          console.error("Database user insert rejected (Row Level Security / Schema error):", dbErr);
-        }
-      } catch (e) {
-        console.warn("Could not insert signup row to Supabase:", e);
-      }
-    };
-    pushSignupRow();
+    // Supabase DB Trigger will automatically insert the user into public.users
   };
 
   const handleLogout = () => {
@@ -634,6 +620,7 @@ export default function App() {
         });
         if (signUpError) {
           console.error("SignUp error:", signUpError);
+          return { success: false, message: 'SignUp error: ' + signUpError.message };
         } else {
           signedUpUser = data;
         }
@@ -642,24 +629,8 @@ export default function App() {
       }
 
       // Add user to the local roster state too so they instantly appear in lists
-      // Note: A database trigger in Supabase should ideally insert into `users` 
-      // but to be safe, we insert explicitly here for the mock.
+      // Note: A database trigger in Supabase should automatically insert into `users`
       const finalUserId = signedUpUser?.user?.id || crypto.randomUUID();
-      try {
-        const { error: dbError } = await supabase.from('users').insert({
-          id: finalUserId,
-          email: newUser.email,
-          artist_name: newUser.artistName,
-          plan: newUser.plan,
-          is_approved: true,
-          registered_at: newUser.registeredAt || new Date().toISOString()
-        });
-        if (dbError) {
-          console.error("Database user insert rejected (Row Level Security / Schema error):", dbError);
-        }
-      } catch (e) {
-        console.warn("Database user insert failed to execute:", e);
-      }
 
       const userWithId: User = {
         ...newUser,

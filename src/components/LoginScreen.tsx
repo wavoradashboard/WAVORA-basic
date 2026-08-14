@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { Mail, Lock, UserPlus, LogIn, Sparkles, Building2, AudioLines, Info, ShieldCheck } from 'lucide-react';
 import { Plan, User } from '../types';
 import { supabase } from '../supabase';
+import WavoraLogo from './WavoraLogo';
 
 interface LoginScreenProps {
   onLogin: (user: User) => void;
@@ -215,9 +216,9 @@ export default function LoginScreen({ onLogin, onRegister, allUsers }: LoginScre
             GLOBAL MUSIC DISTRIBUTION
           </div>
           
-          <h1 className="text-4xl md:text-5xl font-black tracking-tighter uppercase text-white leading-tight" id="main_logo_wavora">
-            Wavora <span className="text-[#6366F1]">Live</span>
-          </h1>
+          <div className="py-2" id="main_logo_wavora">
+            <WavoraLogo size="lg" className="w-full max-w-[280px] md:max-w-[320px] lg:max-w-none" />
+          </div>
 
           <p className="text-gray-400 text-xs leading-relaxed max-w-sm">
             Distribute your music worldwide to Spotify, Apple Music, TikTok, Amazon, and 150+ major streaming platforms. Keep 100% of your royalties.

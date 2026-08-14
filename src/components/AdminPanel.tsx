@@ -179,6 +179,7 @@ export default function AdminPanel({
   onUpdatePayoutRequest
 }: AdminPanelProps) {
   const [activeTab, setActiveTab] = useState<'users' | 'releases' | 'queries' | 'oac' | 'revenue' | 'notifications' | 'artists' | 'legal' | 'payouts'>('users');
+  const [userSearchQuery, setUserSearchQuery] = useState('');
   const [inspectRelease, setInspectRelease] = useState<Release | null>(null);
   const [editingTrackIsrcMap, setEditingTrackIsrcMap] = useState<Record<string, string>>({});
 
@@ -688,206 +689,462 @@ export default function AdminPanel({
         
         {/* MEMBERS APPROVAL TAB */}
         {activeTab === 'users' && (
-          <div className="space-y-6">
-            <div className="max-w-2xl mx-auto w-full" id="admin_members_section">
-            {/* Create / Provision Artist Account */}
-            <div className="bg-white/5 p-6 rounded-3xl border border-white/10 space-y-4">
-              <h3 className="text-sm font-bold uppercase tracking-widest text-[#6366F1]">Provision Artist</h3>
-              <p className="text-[11px] text-gray-400">Directly generate, configure, and approve a secure artist account.</p>
-
-              <form onSubmit={handleCreateUserSubmit} className="space-y-4 pt-2 text-left">
-                <div className="space-y-1">
-                  <label className="block text-[9px] font-bold text-gray-500 uppercase tracking-widest">Artist / Band Name</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Lunar Melody"
-                    className="w-full bg-black border border-white/10 rounded p-2.5 text-xs text-white outline-none focus:border-[#6366F1]"
-                    value={createArtistName}
-                    onChange={(e) => setCreateArtistName(e.target.value)}
-                    id="admin_create_user_name"
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <label className="block text-[9px] font-bold text-gray-500 uppercase tracking-widest">Email Address</label>
-                  <input
-                    type="email"
-                    placeholder="e.g. artist@wavora.live"
-                    className="w-full bg-black border border-white/10 rounded p-2.5 text-xs text-white outline-none focus:border-[#6366F1]"
-                    value={createEmail}
-                    onChange={(e) => setCreateEmail(e.target.value)}
-                    id="admin_create_user_email"
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <label className="block text-[9px] font-bold text-gray-500 uppercase tracking-widest">Password</label>
-                  <input
-                    type="password"
-                    placeholder="e.g. securePass123"
-                    className="w-full bg-black border border-white/10 rounded p-2.5 text-xs text-white outline-none focus:border-[#6366F1]"
-                    value={createPassword}
-                    onChange={(e) => setCreatePassword(e.target.value)}
-                    id="admin_create_user_password"
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <label className="block text-[9px] font-bold text-gray-500 uppercase tracking-widest">Distribution tier</label>
-                  <select
-                    className="w-full bg-black border border-white/10 rounded p-2.5 text-xs text-white outline-none focus:border-[#6366F1]"
-                    value={createPlan}
-                    onChange={(e) => setCreatePlan(e.target.value as Plan)}
-                    id="admin_create_user_plan"
-                  >
-                    <option value="Free">Free Tier</option>
-                  </select>
-                </div>
-
-                {createError && (
-                  <div className="p-2 text-[10px] text-red-400 bg-red-950/20 border border-red-500/20 rounded font-mono" id="admin_create_user_err">
-                    ⚠ {createError}
-                  </div>
-                )}
-
-                {createSuccess && (
-                  <div className="p-2 text-[10px] text-indigo-400 bg-indigo-900/20 border border-indigo-500/20 rounded font-mono" id="admin_create_user_succ">
-                    ✓ {createSuccess}
-                  </div>
-                )}
-
-                <button
-                  type="submit"
-                  disabled={createLoading}
-                  className="w-full py-2.5 px-4 bg-[#6366F1] hover:bg-[#818CF8] disabled:bg-gray-800 disabled:text-gray-500 disabled:cursor-not-allowed text-black font-black rounded text-[11px] uppercase tracking-wide cursor-pointer transition duration-150 flex items-center justify-center gap-2"
-                  id="admin_btn_create_user"
-                >
-                  {createLoading ? (
-                    <span className="flex items-center gap-1">
-                      <svg className="animate-spin h-3.5 w-3.5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      Provisioning on Supabase...
-                    </span>
-                  ) : (
-                    "Create & Approve User"
-                  )}
-                </button>
-              </form>
+          <div className="space-y-6 text-left">
+            {/* Header / Stats Summary */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4" id="member_stats_row">
+              <div className="bg-white/5 p-4 rounded-2xl border border-white/10 flex flex-col justify-between">
+                <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Total Registrants</span>
+                <span className="text-2xl font-black text-white mt-1">{users.length}</span>
+              </div>
+              <div className="bg-amber-500/10 p-4 rounded-2xl border border-amber-500/20 flex flex-col justify-between">
+                <span className="text-[10px] text-amber-500 font-bold uppercase tracking-wider">Pending Approvals</span>
+                <span className="text-2xl font-black text-amber-500 mt-1">{pendingUsers.length}</span>
+              </div>
+              <div className="bg-indigo-500/10 p-4 rounded-2xl border border-indigo-500/20 flex flex-col justify-between">
+                <span className="text-[10px] text-indigo-400 font-bold uppercase tracking-wider">Approved Members</span>
+                <span className="text-2xl font-black text-indigo-400 mt-1">{activeUsers.length}</span>
+              </div>
             </div>
-          </div>
 
-            {/* Section: Account Lifecycles & Durations (Registration & Plan End Dates) */}
-            <div className="bg-white/5 backdrop-blur-md p-6 rounded-3xl border border-white/10 text-left space-y-4" id="member_lifecycles_section">
+            {/* PENDING MEMBERS ACCESS BOARD */}
+            {pendingUsers.length > 0 && (
+              <div className="bg-amber-950/20 border border-amber-500/20 p-6 rounded-3xl space-y-4" id="pending_approvals_board">
+                <div>
+                  <h3 className="text-sm font-bold uppercase tracking-widest text-amber-500 flex items-center gap-2">
+                    <ShieldCheck className="w-4 h-4 text-amber-500" /> Pending Access Requests ({pendingUsers.length})
+                  </h3>
+                  <p className="text-[11px] text-gray-400 mt-0.5">
+                    Review and approve artist registration accounts waiting for access to the distribution engine.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {pendingUsers.map((user, idx) => (
+                    <div 
+                      key={`pending-${user.email}-${idx}`} 
+                      className="p-4 bg-black rounded-xl border border-amber-500/10 space-y-3"
+                    >
+                      <div className="flex justify-between items-start">
+                        <div className="min-w-0 flex-1">
+                          <span className="font-bold text-white block text-xs truncate">{user.artistName}</span>
+                          <span className="text-[10px] text-gray-400 block font-mono mt-0.5 truncate">{user.email}</span>
+                          <span className="text-[9px] text-amber-500 font-semibold bg-amber-500/10 px-1.5 py-0.5 rounded inline-block mt-2 font-mono">
+                            Requested Tier: {user.plan}
+                          </span>
+                        </div>
+                        <div className="flex gap-1 flex-shrink-0">
+                          <button
+                            onClick={() => onApproveUser(user.email)}
+                            className="p-1.5 bg-indigo-600 hover:bg-indigo-500 text-black font-black rounded text-[10px] uppercase cursor-pointer flex items-center gap-1"
+                            title="Approve Access"
+                          >
+                            <Check className="w-3.5 h-3.5" /> Approve
+                          </button>
+                          <button
+                            onClick={() => onRejectUser(user.email)}
+                            className="p-1.5 bg-red-950/50 hover:bg-red-900/50 border border-red-500/30 text-red-400 font-bold rounded text-[10px] uppercase cursor-pointer flex items-center gap-1"
+                            title="Decline Account"
+                          >
+                            <X className="w-3.5 h-3.5" /> Reject
+                          </button>
+                        </div>
+                      </div>
+                      <div className="text-[10px] text-gray-500 pt-1.5 border-t border-white/5 font-mono">
+                        Registration date: {user.registeredAt ? new Date(user.registeredAt).toLocaleDateString() : 'N/A'}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* CREATION & DIRECTORY SEARCH CONTROLS */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Column 1: Provision Direct Artist Account */}
+              <div className="bg-white/5 p-6 rounded-3xl border border-white/10 space-y-4" id="direct_provision_box">
+                <h3 className="text-sm font-bold uppercase tracking-widest text-[#6366F1]">Provision New Artist</h3>
+                <p className="text-[11px] text-gray-400">Directly create, configure, and auto-approve a new artist account.</p>
+
+                <form onSubmit={handleCreateUserSubmit} className="space-y-4 text-left">
+                  <div className="space-y-1">
+                    <label className="block text-[9px] font-bold text-gray-500 uppercase tracking-widest">Artist / Band Name</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Lunar Melody"
+                      className="w-full bg-black border border-white/10 rounded p-2.5 text-xs text-white outline-none focus:border-[#6366F1]"
+                      value={createArtistName}
+                      onChange={(e) => setCreateArtistName(e.target.value)}
+                      id="admin_create_user_name"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="block text-[9px] font-bold text-gray-500 uppercase tracking-widest">Email Address</label>
+                    <input
+                      type="email"
+                      placeholder="e.g. artist@wavora.live"
+                      className="w-full bg-black border border-white/10 rounded p-2.5 text-xs text-white outline-none focus:border-[#6366F1]"
+                      value={createEmail}
+                      onChange={(e) => setCreateEmail(e.target.value)}
+                      id="admin_create_user_email"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="block text-[9px] font-bold text-gray-500 uppercase tracking-widest">Password</label>
+                    <input
+                      type="password"
+                      placeholder="e.g. securePass123"
+                      className="w-full bg-black border border-white/10 rounded p-2.5 text-xs text-white outline-none focus:border-[#6366F1]"
+                      value={createPassword}
+                      onChange={(e) => setCreatePassword(e.target.value)}
+                      id="admin_create_user_password"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <label className="block text-[9px] font-bold text-gray-500 uppercase tracking-widest">Distribution tier</label>
+                      <select
+                        className="w-full bg-black border border-white/10 rounded p-2.5 text-xs text-white outline-none focus:border-[#6366F1]"
+                        value={createPlan}
+                        onChange={(e) => setCreatePlan(e.target.value as Plan)}
+                        id="admin_create_user_plan"
+                      >
+                        <option value="Free">Free Tier</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {createError && (
+                    <div className="p-2 text-[10px] text-red-400 bg-red-950/20 border border-red-500/20 rounded font-mono" id="admin_create_user_err">
+                      ⚠ {createError}
+                    </div>
+                  )}
+
+                  {createSuccess && (
+                    <div className="p-2 text-[10px] text-indigo-400 bg-indigo-900/20 border border-indigo-500/20 rounded font-mono" id="admin_create_user_succ">
+                      ✓ {createSuccess}
+                    </div>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={createLoading}
+                    className="w-full py-2.5 px-4 bg-[#6366F1] hover:bg-[#818CF8] disabled:bg-gray-800 disabled:text-gray-500 disabled:cursor-not-allowed text-black font-black rounded text-[11px] uppercase tracking-wide cursor-pointer transition duration-150 flex items-center justify-center gap-2"
+                    id="admin_btn_create_user"
+                  >
+                    {createLoading ? (
+                      <span className="flex items-center gap-1">
+                        <svg className="animate-spin h-3.5 w-3.5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Provisioning on Supabase...
+                      </span>
+                    ) : (
+                      "Create & Approve User"
+                    )}
+                  </button>
+                </form>
+              </div>
+
+              {/* Column 2: Search Directory Controls */}
+              <div className="bg-white/5 p-6 rounded-3xl border border-white/10 space-y-4 flex flex-col justify-between" id="search_directory_box">
+                <div className="space-y-2">
+                  <h3 className="text-sm font-bold uppercase tracking-widest text-[#6366F1]">Master Directory Search</h3>
+                  <p className="text-[11px] text-gray-400">
+                    Filter and manage every user account currently synced from your Supabase database. Search by legal/artist name or verified email address.
+                  </p>
+                </div>
+
+                <div className="space-y-4 pt-4">
+                  <div className="space-y-1.5">
+                    <label className="block text-[9px] font-bold text-gray-500 uppercase tracking-widest">Search Query</label>
+                    <input
+                      type="text"
+                      placeholder="Search by artist name or email address..."
+                      className="w-full bg-black border border-white/10 rounded p-2.5 text-xs text-white outline-none focus:border-[#6366F1]"
+                      value={userSearchQuery}
+                      onChange={(e) => setUserSearchQuery(e.target.value)}
+                      id="admin_user_search_input"
+                    />
+                  </div>
+
+                  <div className="p-4 bg-zinc-900/30 rounded-xl border border-white/5 space-y-2 text-xs">
+                    <span className="font-bold text-gray-300 block text-[10px] uppercase tracking-wider">Directory Overview</span>
+                    <div className="grid grid-cols-2 gap-4 text-gray-400">
+                      <div>
+                        <span className="text-[9px] block text-gray-500">MATCHED PROFILE ENTRIES</span>
+                        <span className="text-white font-mono font-bold">
+                          {users.filter(u => 
+                            u.artistName.toLowerCase().includes(userSearchQuery.toLowerCase()) || 
+                            u.email.toLowerCase().includes(userSearchQuery.toLowerCase())
+                          ).length} profiles
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-[9px] block text-gray-500">CURRENT REGISTRY SCOPE</span>
+                        <span className="text-white font-mono font-bold">Supabase Cloud Auth</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* MASTER SYSTEM USERS DIRECTORY */}
+            <div className="bg-white/5 backdrop-blur-md p-6 rounded-3xl border border-white/10 space-y-4" id="member_lifecycles_section">
               <div className="flex justify-between items-center pb-2 border-b border-white/10">
                 <div>
                   <h3 className="text-sm font-bold uppercase tracking-widest text-[#6366F1] flex items-center gap-2">
-                    <Calendar className="w-4 h-4 text-[#6366F1]" /> Account Lifecycles & Plan Durations
+                    <Calendar className="w-4 h-4 text-[#6366F1]" /> Master Member Registry & Access Controls
                   </h3>
                   <p className="text-[11px] text-gray-400 mt-1">
-                    Edit user registration dates and plan expiration timelines. Leaving the end date empty means the plan is perpetual.
+                    Manage active members, modify subscription tiers, change security credentials, edit account start/end lifecycles, or revoke system authorizations.
                   </p>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                {activeUsers.map((user, idx) => {
-                  const isEditing = editingLifecycleEmail === user.email;
-                  const regDateFormatted = user.registeredAt ? new Date(user.registeredAt).toISOString().split('T')[0] : '';
-                  const endDateFormatted = user.planEndDate ? new Date(user.planEndDate).toISOString().split('T')[0] : '';
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                {users
+                  .filter(u => 
+                    u.artistName.toLowerCase().includes(userSearchQuery.toLowerCase()) || 
+                    u.email.toLowerCase().includes(userSearchQuery.toLowerCase())
+                  )
+                  .map((user, idx) => {
+                    const isEditingLifecycle = editingLifecycleEmail === user.email;
+                    const isEditingPassword = editingPasswordUserEmail === user.email;
+                    const regDateFormatted = user.registeredAt ? new Date(user.registeredAt).toISOString().split('T')[0] : '';
+                    const endDateFormatted = user.planEndDate ? new Date(user.planEndDate).toISOString().split('T')[0] : '';
 
-                  return (
-                    <div 
-                      key={`lifecycle-${user.email}-${idx}`} 
-                      className="p-4 bg-black rounded-xl border border-white/10 space-y-3 relative"
-                      id={`lifecycle_card_${user.email}`}
-                    >
-                      <div className="flex justify-between items-start">
-                        <div className="min-w-0 flex-1">
-                          <span className="font-bold text-gray-200 block text-xs truncate">{user.artistName}</span>
-                          <span className="text-[10px] text-gray-400 block font-mono mt-0.5 truncate">{user.email}</span>
-                        </div>
-                        <div className="flex gap-2 flex-shrink-0">
-                          <button
-                            onClick={() => {
-                              if (isEditing) {
-                                setEditingLifecycleEmail(null);
-                              } else {
-                                setEditingLifecycleEmail(user.email);
-                                setEditRegDateValue(regDateFormatted);
-                                setEditEndDateValue(endDateFormatted);
-                              }
-                            }}
-                            className="px-2.5 py-1 bg-white/5 backdrop-blur-md border border-white/10 hover:bg-zinc-800 text-gray-300 font-bold rounded text-[10px] uppercase cursor-pointer transition"
-                            id={`btn_edit_lifecycle_${user.email}`}
-                          >
-                            {isEditing ? 'Cancel' : 'Edit Dates'}
-                          </button>
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4 text-[11px] pt-1.5 border-t border-white/10">
-                        <div>
-                          <span className="text-gray-500 block uppercase text-[8px] tracking-wider font-bold">REGISTRATION DATE</span>
-                          <span className="text-gray-300 font-mono">
-                            {user.registeredAt ? new Date(user.registeredAt).toLocaleDateString() : 'N/A'}
-                          </span>
-                        </div>
-                        <div>
-                          <span className="text-gray-500 block uppercase text-[8px] tracking-wider font-bold">PLAN END DATE</span>
-                          <span className="text-indigo-400 font-mono font-bold">
-                            {user.planEndDate ? new Date(user.planEndDate).toLocaleDateString() : 'Indefinite'}
-                          </span>
-                        </div>
-                      </div>
-
-                      {lifecycleUpdateSuccessEmail === user.email && (
-                        <div className="text-[10px] text-indigo-400 font-bold pt-1">
-                          ✓ Lifecycle dates updated successfully!
-                        </div>
-                      )}
-
-                      {isEditing && (
-                        <div className="mt-3 pt-3 border-t border-white/10 space-y-3" id={`edit_lifecycle_form_${user.email}`}>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
-                            <div className="space-y-1">
-                              <label className="block text-[9px] font-bold text-gray-500 uppercase tracking-widest">Registration Date</label>
-                              <input
-                                type="date"
-                                value={editRegDateValue}
-                                onChange={(e) => setEditRegDateValue(e.target.value)}
-                                className="w-full bg-zinc-900 border border-white/10 text-white rounded p-1.5 text-xs focus:outline-none focus:border-violet-500"
-                                id={`reg_date_input_${user.email}`}
-                              />
+                    return (
+                      <div 
+                        key={`registry-${user.email}-${idx}`} 
+                        className={`p-5 bg-black rounded-2xl border transition duration-150 space-y-4 relative ${
+                          user.isApproved ? 'border-white/10' : 'border-amber-500/20 bg-amber-500/[0.01]'
+                        }`}
+                        id={`registry_card_${user.email}`}
+                      >
+                        {/* Top Info Banner */}
+                        <div className="flex justify-between items-start gap-3">
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-2">
+                              <span className="font-extrabold text-white text-sm truncate">{user.artistName}</span>
+                              {user.isApproved ? (
+                                <span className="px-1.5 py-0.5 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded text-[8px] font-mono uppercase font-black">
+                                  Approved
+                                </span>
+                              ) : (
+                                <span className="px-1.5 py-0.5 bg-amber-500/10 text-amber-500 border border-amber-500/20 rounded text-[8px] font-mono uppercase font-black animate-pulse">
+                                  Pending
+                                </span>
+                              )}
                             </div>
-                            <div className="space-y-1">
-                              <label className="block text-[9px] font-bold text-gray-500 uppercase tracking-widest">Plan End Date</label>
-                              <input
-                                type="date"
-                                value={editEndDateValue}
-                                onChange={(e) => setEditEndDateValue(e.target.value)}
-                                className="w-full bg-zinc-900 border border-white/10 text-white rounded p-1.5 text-xs focus:outline-none focus:border-violet-500"
-                                id={`end_date_input_${user.email}`}
-                              />
-                              <p className="text-[8px] text-gray-500">Leave blank for indefinite tier access.</p>
-                            </div>
+                            <span className="text-[10px] text-gray-500 block font-mono mt-0.5 truncate">{user.email}</span>
                           </div>
 
-                          <div className="flex justify-end pt-1">
+                          <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
+                            {/* Distribution Tier Selector */}
+                            <div className="flex items-center gap-1">
+                              <span className="text-[8px] text-gray-500 font-bold uppercase tracking-wider">Tier:</span>
+                              <select
+                                value={user.plan}
+                                onChange={async (e) => {
+                                  try {
+                                    await onUpdateUser(user.email, { plan: e.target.value as Plan });
+                                  } catch (err) {
+                                    console.error("Failed to update user plan", err);
+                                  }
+                                }}
+                                className="bg-zinc-900 border border-white/15 rounded px-1.5 py-0.5 text-[10px] font-bold text-indigo-400 cursor-pointer outline-none focus:border-indigo-500"
+                                id={`tier_selector_${user.email}`}
+                              >
+                                <option value="Free">Free</option>
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Lifecycles overview */}
+                        <div className="grid grid-cols-2 gap-4 text-[10px] pt-3 border-t border-white/5">
+                          <div>
+                            <span className="text-gray-500 block uppercase text-[8px] tracking-wider font-bold">REGISTRATION DATE</span>
+                            <span className="text-gray-300 font-mono">
+                              {user.registeredAt ? new Date(user.registeredAt).toLocaleDateString() : 'N/A'}
+                            </span>
+                          </div>
+                          <div>
+                            <span className="text-gray-500 block uppercase text-[8px] tracking-wider font-bold">PLAN END DATE</span>
+                            <span className="text-indigo-400 font-mono font-bold">
+                              {user.planEndDate ? new Date(user.planEndDate).toLocaleDateString() : 'Indefinite'}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Action buttons list */}
+                        <div className="flex flex-wrap items-center justify-between pt-3 border-t border-white/5 gap-2">
+                          <div className="flex flex-wrap gap-1.5">
+                            {/* Edit Lifecycles trigger */}
                             <button
-                              onClick={() => handleAdminUpdateLifecycle(user.email)}
-                              className="bg-[#6366F1] hover:bg-[#818CF8] text-black font-black px-4 py-1.5 rounded text-[10px] uppercase cursor-pointer"
-                              id={`btn_save_lifecycle_${user.email}`}
+                              onClick={() => {
+                                if (isEditingLifecycle) {
+                                  setEditingLifecycleEmail(null);
+                                } else {
+                                  setEditingLifecycleEmail(user.email);
+                                  setEditingPasswordUserEmail(null); // Close other editor
+                                  setEditRegDateValue(regDateFormatted);
+                                  setEditEndDateValue(endDateFormatted);
+                                }
+                              }}
+                              className={`px-2 py-1 border rounded text-[9px] font-bold uppercase tracking-tight cursor-pointer transition ${
+                                isEditingLifecycle 
+                                  ? 'bg-zinc-800 border-zinc-700 text-white' 
+                                  : 'bg-white/5 border-white/10 hover:bg-white/10 text-gray-300'
+                              }`}
+                              id={`btn_edit_lifecycle_${user.email}`}
                             >
-                              Save Dates
+                              Edit Dates
+                            </button>
+
+                            {/* Edit Password trigger */}
+                            <button
+                              onClick={() => {
+                                if (isEditingPassword) {
+                                  setEditingPasswordUserEmail(null);
+                                } else {
+                                  setEditingPasswordUserEmail(user.email);
+                                  setEditingLifecycleEmail(null); // Close other editor
+                                  setNewPasswordValue('');
+                                }
+                              }}
+                              className={`px-2 py-1 border rounded text-[9px] font-bold uppercase tracking-tight cursor-pointer transition ${
+                                isEditingPassword 
+                                  ? 'bg-zinc-800 border-zinc-700 text-white' 
+                                  : 'bg-white/5 border-white/10 hover:bg-white/10 text-gray-300'
+                              }`}
+                              id={`btn_edit_pwd_${user.email}`}
+                            >
+                              Change Pwd
+                            </button>
+                          </div>
+
+                          <div className="flex gap-1.5 ml-auto">
+                            {/* Impersonate button */}
+                            {user.isApproved && (
+                              <button
+                                onClick={() => onImpersonateUser(user)}
+                                className="px-2.5 py-1 bg-[#6366F1] hover:bg-[#818CF8] text-black font-black rounded text-[9px] uppercase cursor-pointer flex items-center gap-1 transition"
+                                id={`btn_impersonate_${user.email}`}
+                                title="Login to Artist Dashboard"
+                              >
+                                <Eye className="w-3 h-3" /> Access
+                              </button>
+                            )}
+
+                            {/* Approve button (if pending) */}
+                            {!user.isApproved && (
+                              <button
+                                onClick={() => onApproveUser(user.email)}
+                                className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 text-black font-black rounded text-[9px] uppercase cursor-pointer flex items-center gap-1 transition"
+                                id={`btn_approve_direct_${user.email}`}
+                              >
+                                Approve
+                              </button>
+                            )}
+
+                            {/* Delete account button */}
+                            <button
+                              onClick={() => onDeleteUser(user.email)}
+                              className="p-1 px-1.5 bg-red-950/20 hover:bg-red-900/20 border border-red-500/20 text-red-400 font-bold rounded text-[9px] uppercase cursor-pointer flex items-center gap-1 transition"
+                              id={`btn_delete_user_${user.email}`}
+                              title="Delete Account Permanently"
+                            >
+                              <Trash2 className="w-3 h-3" /> Revoke
                             </button>
                           </div>
                         </div>
-                      )}
-                    </div>
-                  );
-                })}
+
+                        {/* Inline Success Feedbacks */}
+                        {lifecycleUpdateSuccessEmail === user.email && (
+                          <div className="text-[10px] text-indigo-400 font-bold bg-indigo-950/20 border border-indigo-500/10 p-1.5 rounded">
+                            ✓ Lifecycle dates updated successfully!
+                          </div>
+                        )}
+                        {passwordChangeSuccessEmail === user.email && (
+                          <div className="text-[10px] text-indigo-400 font-bold bg-indigo-950/20 border border-indigo-500/10 p-1.5 rounded">
+                            ✓ Password updated successfully in cloud registry!
+                          </div>
+                        )}
+
+                        {/* Lifecycle Editor Block */}
+                        {isEditingLifecycle && (
+                          <div className="mt-3 pt-3 border-t border-white/5 space-y-3" id={`edit_lifecycle_form_${user.email}`}>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
+                              <div className="space-y-1">
+                                <label className="block text-[8px] font-bold text-gray-500 uppercase tracking-widest">Registration Date</label>
+                                <input
+                                  type="date"
+                                  value={editRegDateValue}
+                                  onChange={(e) => setEditRegDateValue(e.target.value)}
+                                  className="w-full bg-zinc-950 border border-white/10 text-white rounded p-1.5 text-xs focus:outline-none focus:border-violet-500"
+                                  id={`reg_date_input_${user.email}`}
+                                />
+                              </div>
+                              <div className="space-y-1">
+                                <label className="block text-[8px] font-bold text-gray-500 uppercase tracking-widest">Plan End Date</label>
+                                <input
+                                  type="date"
+                                  value={editEndDateValue}
+                                  onChange={(e) => setEditEndDateValue(e.target.value)}
+                                  className="w-full bg-zinc-950 border border-white/10 text-white rounded p-1.5 text-xs focus:outline-none focus:border-violet-500"
+                                  id={`end_date_input_${user.email}`}
+                                />
+                                <p className="text-[8px] text-gray-500">Leave blank for indefinite tier access.</p>
+                              </div>
+                            </div>
+
+                            <div className="flex justify-end pt-1">
+                              <button
+                                onClick={() => handleAdminUpdateLifecycle(user.email)}
+                                className="bg-[#6366F1] hover:bg-[#818CF8] text-black font-black px-4 py-1.5 rounded text-[9px] uppercase cursor-pointer"
+                                id={`btn_save_lifecycle_${user.email}`}
+                              >
+                                Save Dates
+                              </button>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Password Changer Block */}
+                        {isEditingPassword && (
+                          <div className="mt-3 pt-3 border-t border-white/5 space-y-3" id={`edit_password_form_${user.email}`}>
+                            <div className="space-y-1 text-left">
+                              <label className="block text-[8px] font-bold text-gray-500 uppercase tracking-widest">New Password</label>
+                              <input
+                                type="text"
+                                placeholder="Enter secure new password..."
+                                value={newPasswordValue}
+                                onChange={(e) => setNewPasswordValue(e.target.value)}
+                                className="w-full bg-zinc-950 border border-white/10 text-white rounded p-1.5 text-xs focus:outline-none focus:border-violet-500"
+                                id={`password_input_${user.email}`}
+                              />
+                            </div>
+
+                            <div className="flex justify-end pt-1">
+                              <button
+                                onClick={() => handleAdminChangePassword(user.email)}
+                                className="bg-[#6366F1] hover:bg-[#818CF8] text-black font-black px-4 py-1.5 rounded text-[9px] uppercase cursor-pointer"
+                                id={`btn_save_password_${user.email}`}
+                              >
+                                Update Password
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
               </div>
             </div>
           </div>

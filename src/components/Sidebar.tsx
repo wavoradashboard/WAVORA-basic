@@ -16,6 +16,7 @@ import {
   Menu
 } from 'lucide-react';
 import { Plan, User } from '../types';
+import WavoraLogo from './WavoraLogo';
 
 interface SidebarProps {
   currentTab: string;
@@ -90,12 +91,8 @@ export default function Sidebar({
         >
           {/* Top Row Header inside overlay */}
           <div className="flex items-center justify-between px-6 h-16 md:h-20 border-b border-white/10 flex-shrink-0 bg-[#070710] z-20">
-            <div className="flex items-center gap-2.5">
-              <div className="w-7 h-7 md:w-8 md:h-8 bg-[#6366F1] rounded-full flex items-center justify-center font-black text-black text-xs md:text-sm">W</div>
-              <div>
-                <span className="text-sm md:text-base font-black tracking-tighter uppercase text-white">Wavora <span className="text-[#6366F1]">Live</span></span>
-                <div className="text-[8px] md:text-[9px] text-[#6366F1] font-mono tracking-widest uppercase">Artist Portal</div>
-              </div>
+            <div className="flex items-center">
+              <WavoraLogo size="sm" />
             </div>
             <button
               type="button"
@@ -186,14 +183,8 @@ export default function Sidebar({
         <div className="flex-1 flex flex-col min-h-0">
           {/* Header Brand */}
           <div className="hidden lg:flex items-center justify-between px-6 py-5 border-b border-white/10 flex-shrink-0" id="sidebar_header_wrapper">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 bg-[#6366F1] rounded-full flex items-center justify-center">
-                {/* Removed vertical bar that looked like an 'i' icon */}
-              </div>
-              <div className="text-left">
-                <span className="text-lg font-black tracking-tighter uppercase text-white">Wavora <span className="text-[#6366F1]">Live</span></span>
-                <div className="text-[10px] text-gray-500 font-mono tracking-widest uppercase">Music Distribution</div>
-              </div>
+            <div className="flex items-center">
+              <WavoraLogo size="md" />
             </div>
             <button
               type="button"
